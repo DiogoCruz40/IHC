@@ -3,6 +3,18 @@ import 'package:Passenger/models/user.dart';
 
 class AuthService {
   FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Usermodel? _userFromFirebaseUser(User? user) {
+    return user != null ? Usermodel(uid: user.uid) : null;
+  }
+
+  Stream<Usermodel?> get user {
+    return _auth
+        .authStateChanges()
+        //.map((FirebaseUser user) => _userFromFirebaseUser(user));
+        .map(_userFromFirebaseUser);
+  }
+
   //register
 
   Future<User?> registerUsingEmailPassword({
@@ -58,4 +70,8 @@ class AuthService {
   }
 
   //logout
+
+  Future signOut() async {
+    return await _auth.signOut();
+  }
 }
