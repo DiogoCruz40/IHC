@@ -207,7 +207,7 @@ class ChatPageState extends State<ChatPage> {
                                   ImageChunkEvent? loadingProgress) {
                                 if (loadingProgress == null) return child;
                                 return Container(
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: ColorConstants.greyColor2,
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(8),

@@ -132,8 +132,7 @@ class HomePageState extends State<HomePage> {
         AndroidNotificationDetails(
       Platform.isAndroid ? 'com.teampassenger.passenger' : 'packageiosaqui',
       'Passenger',
-      playSound: true,
-      enableVibration: true,
+      channelDescription: "Uma aplicação de viagens",
       importance: Importance.max,
       priority: Priority.high,
     );
