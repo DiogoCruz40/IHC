@@ -4,7 +4,7 @@ import 'package:Passenger/constants/color_constants.dart';
 import 'package:Passenger/providers/auth_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-
+import 'package:Passenger/utils/utils.dart';
 import '../widgets/widgets.dart';
 import 'pages.dart';
 
@@ -119,6 +119,10 @@ class LoginPageState extends State<LoginPage> {
                           bool isSuccess = await authProvider.handleSignIn(
                               email: emailController.text,
                               password: passwordController.text);
+
+                          if (Utilities.isKeyboardShowing()) {
+                            Utilities.closeKeyboard(context);
+                          }
                           if (isSuccess) {
                             Navigator.pushReplacement(
                               context,
