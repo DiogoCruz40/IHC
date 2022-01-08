@@ -1,16 +1,21 @@
-import 'package:Passenger/screens/auth/register.dart';
-import 'package:Passenger/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:Passenger/constants/app_constants.dart';
+import 'package:Passenger/constants/color_constants.dart';
+import 'package:Passenger/providers/auth_provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
-class SignIn extends StatefulWidget {
-  SignIn({Key? key}) : super(key: key);
+import '../widgets/widgets.dart';
+import 'pages.dart';
+
+class LoginPage extends StatefulWidget {
+  LoginPage({Key? key}) : super(key: key);
 
   @override
-  _SignInState createState() => _SignInState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _SignInState extends State<SignIn> {
-  final AuthService _auth = AuthService();
+class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController emailController = TextEditingController();
@@ -18,6 +23,20 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    switch (authProvider.status) {
+      case Status.authenticateError:
+        Fluttertoast.showToast(msg: "Sign in fail");
+        break;
+      case Status.authenticateCanceled:
+        Fluttertoast.showToast(msg: "Sign in canceled");
+        break;
+      case Status.authenticated:
+        Fluttertoast.showToast(msg: "Sign in success");
+        break;
+      default:
+        break;
+    }
     return Scaffold(
         body: Form(
       key: _formKey,
@@ -27,7 +46,7 @@ class _SignInState extends State<SignIn> {
           Container(
               alignment: Alignment.center,
               padding: EdgeInsets.fromLTRB(10, 10, 10, 30),
-              child: Text(
+              child: const Text(
                 'Passenger',
                 style: TextStyle(
                   color: Colors.blue,
@@ -67,11 +86,16 @@ class _SignInState extends State<SignIn> {
                 return null;
               },
               controller: passwordController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Password',
               ),
             ),
+          ),
+          Positioned(
+            child: authProvider.status == Status.authenticating
+                ? LoadingView()
+                : SizedBox.shrink(),
           ),
           Row(
             children: [
@@ -85,42 +109,29 @@ class _SignInState extends State<SignIn> {
                         backgroundColor: Colors.blue,
                         elevation: 5,
                       ),
-                      child: Text(
+                      child: const Text(
                         'Login',
                         style: TextStyle(
                             color: Colors.white, fontFamily: 'SansBold'),
                       ),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          dynamic result = await _auth.signInUsingEmailPassword(
+                          bool isSuccess = await authProvider.handleSignIn(
                               email: emailController.text,
                               password: passwordController.text);
-                          if (result == null) {
-                            print('user empty');
+                          if (isSuccess) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomePage(),
+                              ),
+                            );
                           }
-                          print(result.email);
                         }
                       },
                     )),
               ),
             ],
-          ),
-          TextButton(
-            child: Text(
-              'Does not have account? Register now!',
-              style: TextStyle(
-                  color: Colors.blue,
-                  fontFamily: 'SansRegular',
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w600),
-            ),
-            onPressed: () async {
-              //signup screen
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Register()),
-              );
-            },
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 15.0),
@@ -128,7 +139,7 @@ class _SignInState extends State<SignIn> {
               onPressed: () {
                 //forgot password screen
               },
-              child: Text('Forgot Password',
+              child: const Text('Forgot Password',
                   style: TextStyle(
                       color: Colors.blue,
                       fontFamily: 'SansRegular',
