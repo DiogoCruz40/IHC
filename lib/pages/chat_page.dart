@@ -503,9 +503,54 @@ class ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          this.peerNickname,
-          style: TextStyle(fontSize: 22.0, fontFamily: AppConstants.fontfamily),
+        title: Row(
+          children: [
+            Material(
+              child: Image.network(
+                peerAvatar,
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: ColorConstants.themeColor,
+                      value: loadingProgress.expectedTotalBytes != null &&
+                              loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
+                    ),
+                  );
+                },
+                errorBuilder: (context, object, stackTrace) {
+                  return Icon(
+                    Icons.account_circle,
+                    size: 35,
+                    color: ColorConstants.greyColor,
+                  );
+                },
+                width: 35,
+                height: 35,
+                fit: BoxFit.cover,
+              ),
+              borderRadius: BorderRadius.all(
+                Radius.circular(15),
+              ),
+              clipBehavior: Clip.hardEdge,
+            ),
+            SizedBox(
+              width: 15,
+            ),
+            Expanded(
+              child: Text(
+                this.peerNickname,
+                style: TextStyle(
+                    fontSize: 22.0,
+                    fontFamily: AppConstants.fontfamily,
+                    overflow: TextOverflow.fade),
+              ),
+            ),
+          ],
         ),
         //centerTitle: true,
         actions: [
