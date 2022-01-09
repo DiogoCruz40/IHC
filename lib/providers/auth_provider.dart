@@ -117,6 +117,69 @@ class AuthProvider extends ChangeNotifier {
     return false;
   }
 
+  Future<bool> handleSignup(
+      {required String username,
+      required String email,
+      required String password}) async {
+    _status = Status.authenticating;
+    notifyListeners();
+
+    // GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    // if (googleUser != null) {
+    //   GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
+    //   final AuthCredential credential = GoogleAuthProvider.credential(
+    //     accessToken: googleAuth.accessToken,
+    //     idToken: googleAuth.idToken,
+    //   );
+
+    try {
+      UserCredential userCredential =
+          await firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      User? firebaseUser = userCredential.user;
+
+      if (firebaseUser != null) {
+        final QuerySnapshot result = await firebaseFirestore
+            .collection(FirestoreConstants.pathUserCollection)
+            .where(FirestoreConstants.id, isEqualTo: firebaseUser.uid)
+            .get();
+        final List<DocumentSnapshot> documents = result.docs;
+        if (documents.length == 0) {
+          // Writing data to server because here is a new user
+          firebaseFirestore
+              .collection(FirestoreConstants.pathUserCollection)
+              .doc(firebaseUser.uid)
+              .set({
+            FirestoreConstants.nickname: username,
+            FirestoreConstants.photoUrl: firebaseUser.photoURL,
+            FirestoreConstants.id: firebaseUser.uid,
+            'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
+            FirestoreConstants.chattingWith: null
+          });
+
+          // Write data to local storage
+          User? currentUser = firebaseUser;
+          await prefs.setString(FirestoreConstants.id, currentUser.uid);
+          await prefs.setString(FirestoreConstants.nickname, username);
+          await prefs.setString(
+              FirestoreConstants.photoUrl, currentUser.photoURL ?? "");
+        }
+        _status = Status.authenticated;
+        notifyListeners();
+        return true;
+      }
+    } on FirebaseAuthException catch (e) {
+      _status = Status.authenticateError;
+      notifyListeners();
+      return false;
+    }
+
+    return false;
+  }
+
   Future<void> handleSignOut() async {
     _status = Status.uninitialized;
     await firebaseAuth.signOut();

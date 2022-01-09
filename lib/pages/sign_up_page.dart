@@ -1,4 +1,3 @@
-import 'package:Passenger/pages/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:Passenger/constants/app_constants.dart';
 import 'package:Passenger/constants/color_constants.dart';
@@ -9,31 +8,31 @@ import 'package:Passenger/utils/utils.dart';
 import '../widgets/widgets.dart';
 import 'pages.dart';
 
-class LoginPage extends StatefulWidget {
-  LoginPage({Key? key}) : super(key: key);
+class SignupPage extends StatefulWidget {
+  SignupPage({Key? key}) : super(key: key);
 
   @override
-  LoginPageState createState() => LoginPageState();
+  _SignupPageState createState() => _SignupPageState();
 }
 
-class LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
 
+  TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     switch (authProvider.status) {
       case Status.authenticateError:
-        Fluttertoast.showToast(msg: "Sign in fail");
+        Fluttertoast.showToast(msg: "Account already exists");
         break;
       case Status.authenticateCanceled:
-        Fluttertoast.showToast(msg: "Sign in canceled");
+        Fluttertoast.showToast(msg: "Sign up canceled");
         break;
       case Status.authenticated:
-        Fluttertoast.showToast(msg: "Sign in success");
+        Fluttertoast.showToast(msg: "Sign up success");
         break;
       default:
         break;
@@ -55,6 +54,22 @@ class LoginPageState extends State<LoginPage> {
                   fontSize: 36.0,
                 ),
               )),
+          Container(
+            padding: EdgeInsets.all(10),
+            child: TextFormField(
+              validator: (username) {
+                if (username == null || username.isEmpty) {
+                  return 'Please enter a valid username';
+                }
+                return null;
+              },
+              controller: usernameController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Username',
+              ),
+            ),
+          ),
           Container(
             padding: EdgeInsets.all(10),
             child: TextFormField(
@@ -111,13 +126,14 @@ class LoginPageState extends State<LoginPage> {
                         elevation: 5,
                       ),
                       child: const Text(
-                        'Login',
+                        'Register',
                         style: TextStyle(
                             color: Colors.white, fontFamily: 'SansBold'),
                       ),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          bool isSuccess = await authProvider.handleSignIn(
+                          bool isSuccess = await authProvider.handleSignup(
+                              username: usernameController.text,
                               email: emailController.text,
                               password: passwordController.text);
 
@@ -142,15 +158,15 @@ class LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.only(bottom: 15.0),
             child: TextButton(
               onPressed: () {
-                //sign up screen
+                //sign in screen
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SignupPage(),
+                    builder: (context) => LoginPage(),
                   ),
                 );
               },
-              child: const Text('Don´t have an account yet? Sign up',
+              child: const Text('Already have an account yet? Sign in',
                   style: TextStyle(
                       color: Colors.blue,
                       fontFamily: 'SansRegular',
