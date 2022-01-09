@@ -43,7 +43,9 @@ class HomePageState extends State<HomePage> {
   late String currentUserId;
   late HomeProvider homeProvider;
   Debouncer searchDebouncer = Debouncer(milliseconds: 300);
-  StreamController<bool> btnClearController = StreamController<bool>();
+
+  final StreamController<bool> btnClearController =
+      StreamController<bool>.broadcast();
   TextEditingController searchBarTec = TextEditingController();
 
   List<PopupChoices> choices = <PopupChoices>[
@@ -260,65 +262,86 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          AppConstants.homeTitle,
-          style: TextStyle(color: ColorConstants.primaryColor),
-        ),
-        centerTitle: true,
-        actions: <Widget>[buildPopupMenu()],
-      ),
-      body: WillPopScope(
-        child: Stack(
-          children: <Widget>[
-            // List
-            Column(
-              children: [
-                buildSearchBar(),
-                Expanded(
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: homeProvider.getStreamFireStore(
-                        FirestoreConstants.pathUserCollection,
-                        _limit,
-                        _textSearch),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasData) {
-                        if ((snapshot.data?.docs.length ?? 0) > 0) {
-                          return ListView.builder(
-                            padding: EdgeInsets.all(10),
-                            itemBuilder: (context, index) =>
-                                buildItem(context, snapshot.data?.docs[index]),
-                            itemCount: snapshot.data?.docs.length,
-                            controller: listScrollController,
-                          );
-                        } else {
-                          return Center(
-                            child: Text("No users"),
-                          );
-                        }
-                      } else {
-                        return Center(
-                          child: CircularProgressIndicator(
-                            color: ColorConstants.themeColor,
-                          ),
-                        );
-                      }
-                    },
-                  ),
+    return MaterialApp(
+      home: DefaultTabController(
+        length: choicesofpage.length,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              AppConstants.appTitle,
+              style:
+                  TextStyle(fontSize: 36, fontFamily: AppConstants.fontfamily),
+            ),
+            bottom: TabBar(
+              isScrollable: true,
+              tabs: choicesofpage.map<Widget>((Choice choice) {
+                return Tab(
+                  text: choice.title,
+                  icon: Icon(choice.icon),
+                );
+              }).toList(),
+            ),
+            centerTitle: true,
+            actions: <Widget>[buildPopupMenu()],
+          ),
+          body: WillPopScope(
+            child: Stack(
+              children: <Widget>[
+                // List
+                // users(),
+                TabBarView(
+                  children: choicesofpage.map((Choice choice) {
+                    return ChoicePage(choice: choice, users: users());
+                  }).toList(),
                 ),
+                // Loading
+                Positioned(
+                  child: isLoading ? LoadingView() : SizedBox.shrink(),
+                )
               ],
             ),
-
-            // Loading
-            Positioned(
-              child: isLoading ? LoadingView() : SizedBox.shrink(),
-            )
-          ],
+            onWillPop: onBackPress,
+          ),
         ),
-        onWillPop: onBackPress,
       ),
+    );
+  }
+
+  Widget users() {
+    return Column(
+      children: [
+        buildSearchBar(),
+        Expanded(
+          child: StreamBuilder<QuerySnapshot>(
+            stream: homeProvider.getStreamFireStore(
+                FirestoreConstants.pathUserCollection, _limit, _textSearch),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasData) {
+                if ((snapshot.data?.docs.length ?? 0) > 0) {
+                  return ListView.builder(
+                    padding: EdgeInsets.all(10),
+                    itemBuilder: (context, index) =>
+                        buildItem(context, snapshot.data?.docs[index]),
+                    itemCount: snapshot.data?.docs.length,
+                    controller: listScrollController,
+                  );
+                } else {
+                  return Center(
+                    child: Text("No users"),
+                  );
+                }
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: ColorConstants.themeColor,
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -380,7 +403,7 @@ class HomePageState extends State<HomePage> {
         color: ColorConstants.greyColor2,
       ),
       padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-      margin: EdgeInsets.fromLTRB(16, 8, 16, 8),
+      margin: EdgeInsets.fromLTRB(16, 18, 16, 8),
     );
   }
 
@@ -526,5 +549,53 @@ class HomePageState extends State<HomePage> {
     } else {
       return SizedBox.shrink();
     }
+  }
+
+  List<Choice> choicesofpage = <Choice>[
+    Choice(title: 'HOME', icon: Icons.home),
+    Choice(title: 'SEARCH', icon: Icons.search),
+    Choice(title: 'CHAT', icon: Icons.chat_rounded),
+  ];
+}
+
+class Choice {
+  final String title;
+  final IconData icon;
+  const Choice({required this.title, required this.icon});
+}
+
+class ChoicePage extends StatelessWidget {
+  const ChoicePage({Key? key, required this.choice, required this.users})
+      : super(key: key);
+  final Choice choice;
+  final Widget users;
+  @override
+  Widget build(BuildContext context) {
+    if (choice.title == 'SEARCH') {
+      //return search();
+    } else if (choice.title == 'HOME') {
+      //return homechoice();
+    } else if (choice.title == 'CHAT') {
+      return users;
+    }
+    return Card(
+        color: Colors.white,
+        child: Center(
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  choice.icon,
+                  size: 150.0,
+                  color: Colors.blue,
+                ),
+                Text(
+                  choice.title,
+
+                  //style: textStyle,
+                ),
+              ]),
+        ));
   }
 }

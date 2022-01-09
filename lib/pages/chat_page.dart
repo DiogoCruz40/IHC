@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:Passenger/constants/app_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -504,9 +505,33 @@ class ChatPageState extends State<ChatPage> {
       appBar: AppBar(
         title: Text(
           this.peerNickname,
-          style: TextStyle(color: ColorConstants.primaryColor),
+          style: TextStyle(fontSize: 22.0, fontFamily: AppConstants.fontfamily),
         ),
-        centerTitle: true,
+        //centerTitle: true,
+        actions: [
+          ElevatedButton.icon(
+            onPressed: () {
+              //Inserir aquii a chamadaaaa
+            },
+            icon: Icon(
+              Icons.phone_in_talk_rounded,
+              size: 28,
+            ),
+            label: Text(''),
+            style: ElevatedButton.styleFrom(elevation: 0.0),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              //Inserir aquii a video chamadaaaa
+            },
+            icon: Icon(
+              Icons.video_call,
+              size: 28,
+            ),
+            label: Text(''),
+            style: ElevatedButton.styleFrom(elevation: 0.0),
+          )
+        ],
       ),
       body: WillPopScope(
         child: Stack(
