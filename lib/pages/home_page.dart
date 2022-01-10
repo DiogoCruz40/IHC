@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:Passenger/constants/app_constants.dart';
 import 'package:Passenger/constants/constants.dart';
 import 'package:Passenger/providers/providers.dart';
 import 'package:Passenger/utils/utils.dart';
@@ -77,18 +76,10 @@ class HomePageState extends State<HomePage> {
     btnClearController.close();
   }
 
-  void registerNotification() {
+  void registerNotification() async {
     firebaseMessaging.requestPermission();
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('onMessage: $message');
-      if (message.notification != null) {
-        showNotification(message.notification!);
-      }
-      return;
-    });
-
-    firebaseMessaging.getToken().then((token) {
+    await firebaseMessaging.getToken().then((token) {
       print('push token: $token');
       if (token != null) {
         homeProvider.updateDataFirestore(FirestoreConstants.pathUserCollection,
@@ -96,6 +87,14 @@ class HomePageState extends State<HomePage> {
       }
     }).catchError((err) {
       Fluttertoast.showToast(msg: err.message.toString());
+    });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('onMessage: $message');
+      if (message.notification != null) {
+        showNotification(message.notification!);
+      }
+      return;
     });
   }
 
@@ -262,6 +261,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: choicesofpage.length,
         child: Scaffold(
