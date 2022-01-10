@@ -272,10 +272,10 @@ class HomePageState extends State<HomePage> {
             title: const Text(
               AppConstants.appTitle,
               style:
-                  TextStyle(fontSize: 36, fontFamily: AppConstants.fontfamily),
+                  TextStyle(fontSize: 32, fontFamily: AppConstants.fontfamily),
             ),
             bottom: TabBar(
-              isScrollable: true,
+              // isScrollable: true,
               tabs: choicesofpage.map<Widget>((Choice choice) {
                 return Tab(
                   text: choice.title,
@@ -283,7 +283,7 @@ class HomePageState extends State<HomePage> {
                 );
               }).toList(),
             ),
-            centerTitle: true,
+            //centerTitle: true,
             actions: <Widget>[buildPopupMenu()],
           ),
           body: WillPopScope(
