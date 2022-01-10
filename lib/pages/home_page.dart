@@ -9,7 +9,9 @@ import 'package:Passenger/constants/constants.dart';
 import 'package:Passenger/providers/providers.dart';
 import 'package:Passenger/utils/utils.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 //import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
@@ -360,17 +362,50 @@ class HomePageState extends State<HomePage> {
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasData) {
                 if ((snapshot.data?.docs.length ?? 0) > 0) {
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(10),
-                    itemBuilder: (context, index) =>
-                        buildTripItem(context, snapshot.data?.docs[index]),
-                    itemCount: snapshot.data?.docs.length,
-                    controller: listScrollController,
-                  );
+                  return Column(children: [
+                    Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: Row(
+                          children: [
+                            const Text("My Trips",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 18)),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(Icons.add_circle_outlined),
+                              onPressed: () {},
+                            )
+                          ],
+                        )),
+                    ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+                      itemBuilder: (context, index) =>
+                          buildTripItem(context, snapshot.data?.docs[index]),
+                      itemCount: snapshot.data?.docs.length,
+                    )
+                  ]);
                 } else {
-                  return const Center(
-                    child: Text("You have no trips"),
-                  );
+                  return Column(children: [
+                    Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: Row(
+                          children: [
+                            const Text("My Trips",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 18)),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(Icons.add_circle_outlined),
+                              onPressed: () {},
+                            )
+                          ],
+                        )),
+                    const Center(
+                      child: Text("No trips"),
+                    )
+                  ]);
                 }
               } else {
                 return const Center(
@@ -593,86 +628,50 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget buildTripItem(BuildContext context, DocumentSnapshot? document) {
+    String locale = Localizations.localeOf(context).languageCode;
+    initializeDateFormatting(locale, null);
     if (document != null) {
       Trip trip = Trip.fromDocument(document);
       if (trip.user != currentUserId) {
         return const SizedBox.shrink();
       } else {
-        return Container(
-          child: TextButton(
-            child: Row(
-              children: <Widget>[
-                Flexible(
-                  child: Container(
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          child: Text(
-                            '${trip.country}, ${trip.location}',
-                            maxLines: 1,
-                            style: const TextStyle(
-                                color: ColorConstants.primaryColor),
-                          ),
+        return Card(
+          margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+          child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+              child: ListTile(
+                title: Text('${trip.country}, ${trip.location}'),
+                subtitle: Row(children: [
+                  Flexible(
+                      child: Column(
+                    children: [
+                      Align(
                           alignment: Alignment.centerLeft,
-                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 5),
-                        ),
-                        Container(
                           child: Text(
-                            'Start Date: ${trip.startDate.toDate()}',
-                            maxLines: 1,
-                            style: const TextStyle(
-                                color: ColorConstants.primaryColor),
-                          ),
+                              'Start Date: ${DateFormat.yMd(locale).format(trip.startDate.toDate())}')),
+                      Align(
                           alignment: Alignment.centerLeft,
-                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                        ),
-                        Container(
                           child: Text(
-                            'End Date: ${trip.startDate.toDate()}',
-                            maxLines: 1,
-                            style: const TextStyle(
-                                color: ColorConstants.primaryColor),
-                          ),
-                          alignment: Alignment.centerLeft,
-                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                              'End Date: ${DateFormat.yMd(locale).format(trip.endDate.toDate())}')),
+                    ],
+                  ))
+                ]),
+                trailing: SizedBox(
+                    width: 100,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {},
                         ),
                         IconButton(
-                            onPressed: () {}, icon: const Icon(Icons.edit)),
-                        IconButton(
-                            onPressed: () {}, icon: const Icon(Icons.delete))
+                          icon: const Icon(Icons.delete),
+                          color: Colors.red,
+                          onPressed: () {},
+                        ),
                       ],
-                    ),
-                    margin: const EdgeInsets.only(left: 20),
-                  ),
-                ),
-              ],
-            ),
-            onPressed: () {
-              if (Utilities.isKeyboardShowing()) {
-                Utilities.closeKeyboard(context);
-              }
-              /*Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatPage(
-                    peerId: userChat.id,
-                    peerAvatar: userChat.photoUrl,
-                    peerNickname: userChat.nickname,
-                  ),
-                ),
-              );*/
-            },
-            style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all<Color>(ColorConstants.greyColor2),
-              shape: MaterialStateProperty.all<OutlinedBorder>(
-                const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-              ),
-            ),
-          ),
-          margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+                    )),
+              )),
         );
       }
     } else {
