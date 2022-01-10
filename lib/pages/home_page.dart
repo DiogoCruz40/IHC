@@ -290,7 +290,11 @@ class HomePageState extends State<HomePage> {
                 // users(),
                 TabBarView(
                   children: choicesofpage.map((Choice choice) {
-                    return ChoicePage(choice: choice, users: users());
+                    return ChoicePage(
+                      choice: choice,
+                      users: users(),
+                      userTrips: userTrips(),
+                    );
                   }).toList(),
                 ),
                 // Loading
@@ -329,6 +333,43 @@ class HomePageState extends State<HomePage> {
                 } else {
                   return const Center(
                     child: Text("No users"),
+                  );
+                }
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: ColorConstants.themeColor,
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget userTrips() {
+    return Column(
+      children: [
+        Expanded(
+          child: StreamBuilder<QuerySnapshot>(
+            stream: homeProvider.getStreamFireStore(
+                FirestoreConstants.pathTripCollection, _limit, _textSearch),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasData) {
+                if ((snapshot.data?.docs.length ?? 0) > 0) {
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(10),
+                    itemBuilder: (context, index) =>
+                        buildTripItem(context, snapshot.data?.docs[index]),
+                    itemCount: snapshot.data?.docs.length,
+                    controller: listScrollController,
+                  );
+                } else {
+                  return const Center(
+                    child: Text("You have no trips"),
                   );
                 }
               } else {
@@ -551,6 +592,94 @@ class HomePageState extends State<HomePage> {
     }
   }
 
+  Widget buildTripItem(BuildContext context, DocumentSnapshot? document) {
+    if (document != null) {
+      Trip trip = Trip.fromDocument(document);
+      if (trip.user != currentUserId) {
+        return const SizedBox.shrink();
+      } else {
+        return Container(
+          child: TextButton(
+            child: Row(
+              children: <Widget>[
+                Flexible(
+                  child: Container(
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          child: Text(
+                            '${trip.country}, ${trip.location}',
+                            maxLines: 1,
+                            style: const TextStyle(
+                                color: ColorConstants.primaryColor),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 5),
+                        ),
+                        Container(
+                          child: Text(
+                            'Start Date: ${trip.startDate.toDate()}',
+                            maxLines: 1,
+                            style: const TextStyle(
+                                color: ColorConstants.primaryColor),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        ),
+                        Container(
+                          child: Text(
+                            'End Date: ${trip.startDate.toDate()}',
+                            maxLines: 1,
+                            style: const TextStyle(
+                                color: ColorConstants.primaryColor),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        ),
+                        IconButton(
+                            onPressed: () {}, icon: const Icon(Icons.edit)),
+                        IconButton(
+                            onPressed: () {}, icon: const Icon(Icons.delete))
+                      ],
+                    ),
+                    margin: const EdgeInsets.only(left: 20),
+                  ),
+                ),
+              ],
+            ),
+            onPressed: () {
+              if (Utilities.isKeyboardShowing()) {
+                Utilities.closeKeyboard(context);
+              }
+              /*Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatPage(
+                    peerId: userChat.id,
+                    peerAvatar: userChat.photoUrl,
+                    peerNickname: userChat.nickname,
+                  ),
+                ),
+              );*/
+            },
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(ColorConstants.greyColor2),
+              shape: MaterialStateProperty.all<OutlinedBorder>(
+                const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+              ),
+            ),
+          ),
+          margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+        );
+      }
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
   List<Choice> choicesofpage = <Choice>[
     const Choice(title: AppConstants.homeTitle, icon: Icons.home),
     const Choice(title: AppConstants.searchTitle, icon: Icons.search),
@@ -565,17 +694,21 @@ class Choice {
 }
 
 class ChoicePage extends StatelessWidget {
-  const ChoicePage({Key? key, required this.choice, required this.users})
+  const ChoicePage(
+      {Key? key,
+      required this.choice,
+      required this.users,
+      required this.userTrips})
       : super(key: key);
   final Choice choice;
   final Widget users;
+  final Widget userTrips;
   @override
   Widget build(BuildContext context) {
     switch (choice.title) {
       case AppConstants.homeTitle:
         {
-          // return home();
-          break;
+          return userTrips;
         }
       case AppConstants.searchTitle:
         {

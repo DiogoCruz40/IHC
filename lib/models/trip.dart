@@ -7,9 +7,9 @@ class Trip {
   String country; // País
   String location; // Localização
   String description; // Descrição
-  DateTime creationDate; // Data de Criação
-  DateTime startDate; // Data de Início
-  DateTime endDate; // Data de Fim
+  Timestamp creationDate; // Data de Criação
+  Timestamp startDate; // Data de Início
+  Timestamp endDate; // Data de Fim
   //List<Favourite> users;
 
   Trip({
@@ -44,9 +44,9 @@ class Trip {
     String country = doc.get(FirestoreConstants.country);
     String location = doc.get(FirestoreConstants.location);
     String description = doc.get(FirestoreConstants.description);
-    DateTime creationDate = doc.get(FirestoreConstants.creationDate);
-    DateTime startDate = doc.get(FirestoreConstants.startDate);
-    DateTime endDate = doc.get(FirestoreConstants.endDate);
+    Timestamp creationDate = doc.get(FirestoreConstants.creationDate);
+    Timestamp startDate = doc.get(FirestoreConstants.startDate);
+    Timestamp endDate = doc.get(FirestoreConstants.endDate);
     return Trip(
         id: id,
         user: user,
