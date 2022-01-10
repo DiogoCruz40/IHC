@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:Passenger/pages/profile_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -684,6 +685,8 @@ class HomePageState extends State<HomePage> {
     const Choice(title: AppConstants.homeTitle, icon: Icons.home),
     const Choice(title: AppConstants.searchTitle, icon: Icons.search),
     const Choice(title: AppConstants.chatTitle, icon: Icons.chat_rounded),
+    const Choice(
+        title: AppConstants.profileTitle, icon: Icons.person_pin_rounded),
   ];
 }
 
@@ -718,6 +721,10 @@ class ChoicePage extends StatelessWidget {
       case AppConstants.chatTitle:
         {
           return users;
+        }
+      case AppConstants.profileTitle:
+        {
+          return Profile();
         }
     }
     return Card(
