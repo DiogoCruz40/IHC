@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:Passenger/constants/app_constants.dart';
-import 'package:Passenger/constants/color_constants.dart';
 import 'package:Passenger/constants/constants.dart';
 import 'package:Passenger/models/models.dart';
 import 'package:Passenger/providers/providers.dart';
@@ -16,11 +14,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
+  const SettingsPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           AppConstants.settingsTitle,
           style: TextStyle(
             fontFamily: AppConstants.fontfamily,
@@ -29,12 +29,14 @@ class SettingsPage extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: SettingsPageState(),
+      body: const SettingsPageState(),
     );
   }
 }
 
 class SettingsPageState extends StatefulWidget {
+  const SettingsPageState({Key? key}) : super(key: key);
+
   @override
   State createState() => SettingsPageStateState();
 }
@@ -177,7 +179,7 @@ class SettingsPageStateState extends State<SettingsPageState> {
               CupertinoButton(
                 onPressed: getImage,
                 child: Container(
-                  margin: EdgeInsets.all(20),
+                  margin: const EdgeInsets.all(20),
                   child: avatarImageFile == null
                       ? photoUrl.isNotEmpty
                           ? ClipRRect(
@@ -188,7 +190,7 @@ class SettingsPageStateState extends State<SettingsPageState> {
                                 width: 90,
                                 height: 90,
                                 errorBuilder: (context, object, stackTrace) {
-                                  return Icon(
+                                  return const Icon(
                                     Icons.account_circle,
                                     size: 90,
                                     color: ColorConstants.greyColor,
@@ -198,7 +200,7 @@ class SettingsPageStateState extends State<SettingsPageState> {
                                     Widget child,
                                     ImageChunkEvent? loadingProgress) {
                                   if (loadingProgress == null) return child;
-                                  return Container(
+                                  return SizedBox(
                                     width: 90,
                                     height: 90,
                                     child: Center(
@@ -221,7 +223,7 @@ class SettingsPageStateState extends State<SettingsPageState> {
                                 },
                               ),
                             )
-                          : Icon(
+                          : const Icon(
                               Icons.account_circle,
                               size: 90,
                               color: ColorConstants.greyColor,
@@ -243,21 +245,21 @@ class SettingsPageStateState extends State<SettingsPageState> {
                 children: <Widget>[
                   // Username
                   Container(
-                    child: Text(
+                    child: const Text(
                       'Nickname',
                       style: TextStyle(
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.bold,
                           color: ColorConstants.primaryColor),
                     ),
-                    margin: EdgeInsets.only(left: 10, bottom: 5, top: 10),
+                    margin: const EdgeInsets.only(left: 10, bottom: 5, top: 10),
                   ),
                   Container(
                     child: Theme(
                       data: Theme.of(context)
                           .copyWith(primaryColor: ColorConstants.primaryColor),
                       child: TextField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Sweetie',
                           contentPadding: EdgeInsets.all(5),
                           hintStyle: TextStyle(color: ColorConstants.greyColor),
@@ -269,26 +271,26 @@ class SettingsPageStateState extends State<SettingsPageState> {
                         focusNode: focusNodeNickname,
                       ),
                     ),
-                    margin: EdgeInsets.only(left: 30, right: 30),
+                    margin: const EdgeInsets.only(left: 30, right: 30),
                   ),
 
                   // About me
                   Container(
-                    child: Text(
+                    child: const Text(
                       'About me',
                       style: TextStyle(
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.bold,
                           color: ColorConstants.primaryColor),
                     ),
-                    margin: EdgeInsets.only(left: 10, top: 30, bottom: 5),
+                    margin: const EdgeInsets.only(left: 10, top: 30, bottom: 5),
                   ),
                   Container(
                     child: Theme(
                       data: Theme.of(context)
                           .copyWith(primaryColor: ColorConstants.primaryColor),
                       child: TextField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Fun, like travel and play PES...',
                           contentPadding: EdgeInsets.all(5),
                           hintStyle: TextStyle(color: ColorConstants.greyColor),
@@ -300,7 +302,7 @@ class SettingsPageStateState extends State<SettingsPageState> {
                         focusNode: focusNodeAboutMe,
                       ),
                     ),
-                    margin: EdgeInsets.only(left: 30, right: 30),
+                    margin: const EdgeInsets.only(left: 30, right: 30),
                   ),
                 ],
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -310,7 +312,7 @@ class SettingsPageStateState extends State<SettingsPageState> {
               Container(
                 child: TextButton(
                   onPressed: handleUpdateData,
-                  child: Text(
+                  child: const Text(
                     'Update',
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
@@ -318,19 +320,20 @@ class SettingsPageStateState extends State<SettingsPageState> {
                     backgroundColor: MaterialStateProperty.all<Color>(
                         ColorConstants.primaryColor),
                     padding: MaterialStateProperty.all<EdgeInsets>(
-                      EdgeInsets.fromLTRB(30, 10, 30, 10),
+                      const EdgeInsets.fromLTRB(30, 10, 30, 10),
                     ),
                   ),
                 ),
-                margin: EdgeInsets.only(top: 50, bottom: 50),
+                margin: const EdgeInsets.only(top: 50, bottom: 50),
               ),
             ],
           ),
-          padding: EdgeInsets.only(left: 15, right: 15),
+          padding: const EdgeInsets.only(left: 15, right: 15),
         ),
 
         // Loading
-        Positioned(child: isLoading ? LoadingView() : SizedBox.shrink()),
+        Positioned(
+            child: isLoading ? const LoadingView() : const SizedBox.shrink()),
       ],
     );
   }

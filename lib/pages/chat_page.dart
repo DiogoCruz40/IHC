@@ -5,7 +5,6 @@ import 'package:Passenger/constants/app_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:Passenger/constants/color_constants.dart';
 import 'package:Passenger/constants/constants.dart';
 import 'package:Passenger/models/models.dart';
 import 'package:Passenger/providers/providers.dart';
@@ -22,7 +21,7 @@ class ChatPage extends StatefulWidget {
   final String peerAvatar;
   final String peerNickname;
 
-  ChatPage(
+  const ChatPage(
       {Key? key,
       required this.peerId,
       required this.peerAvatar,
@@ -51,7 +50,7 @@ class ChatPageState extends State<ChatPage> {
 
   List<QueryDocumentSnapshot> listMessage = [];
   int _limit = 20;
-  int _limitIncrement = 20;
+  final int _limitIncrement = 20;
   String groupChatId = "";
 
   File? imageFile;
@@ -102,7 +101,7 @@ class ChatPageState extends State<ChatPage> {
       currentUserId = authProvider.getUserFirebaseId()!;
     } else {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LoginPage()),
+        MaterialPageRoute(builder: (context) => const LoginPage()),
         (Route<dynamic> route) => false,
       );
     }
@@ -167,7 +166,7 @@ class ChatPageState extends State<ChatPage> {
       chatProvider.sendMessage(
           content, type, groupChatId, currentUserId, peerId);
       listScrollController.animateTo(0,
-          duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+          duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
     } else {
       Fluttertoast.showToast(
           msg: 'Nothing to send', backgroundColor: ColorConstants.greyColor);
@@ -186,9 +185,10 @@ class ChatPageState extends State<ChatPage> {
                 ? Container(
                     child: Text(
                       messageChat.content,
-                      style: TextStyle(color: ColorConstants.primaryColor),
+                      style:
+                          const TextStyle(color: ColorConstants.primaryColor),
                     ),
-                    padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+                    padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                     width: 200,
                     decoration: BoxDecoration(
                         color: ColorConstants.greyColor2,
@@ -242,7 +242,7 @@ class ChatPageState extends State<ChatPage> {
                                     height: 200,
                                     fit: BoxFit.cover,
                                   ),
-                                  borderRadius: BorderRadius.all(
+                                  borderRadius: const BorderRadius.all(
                                     Radius.circular(8),
                                   ),
                                   clipBehavior: Clip.hardEdge,
@@ -252,7 +252,8 @@ class ChatPageState extends State<ChatPage> {
                               height: 200,
                               fit: BoxFit.cover,
                             ),
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(8)),
                             clipBehavior: Clip.hardEdge,
                           ),
                           onPressed: () {
@@ -267,7 +268,7 @@ class ChatPageState extends State<ChatPage> {
                           },
                           style: ButtonStyle(
                               padding: MaterialStateProperty.all<EdgeInsets>(
-                                  EdgeInsets.all(0))),
+                                  const EdgeInsets.all(0))),
                         ),
                         margin: EdgeInsets.only(
                             bottom: isLastMessageRight(index) ? 20 : 10,
@@ -316,7 +317,7 @@ class ChatPageState extends State<ChatPage> {
                               );
                             },
                             errorBuilder: (context, object, stackTrace) {
-                              return Icon(
+                              return const Icon(
                                 Icons.account_circle,
                                 size: 35,
                                 color: ColorConstants.greyColor,
@@ -326,7 +327,7 @@ class ChatPageState extends State<ChatPage> {
                             height: 35,
                             fit: BoxFit.cover,
                           ),
-                          borderRadius: BorderRadius.all(
+                          borderRadius: const BorderRadius.all(
                             Radius.circular(18),
                           ),
                           clipBehavior: Clip.hardEdge,
@@ -336,14 +337,14 @@ class ChatPageState extends State<ChatPage> {
                       ? Container(
                           child: Text(
                             messageChat.content,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
-                          padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+                          padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                           width: 200,
                           decoration: BoxDecoration(
                               color: ColorConstants.primaryColor,
                               borderRadius: BorderRadius.circular(8)),
-                          margin: EdgeInsets.only(left: 10),
+                          margin: const EdgeInsets.only(left: 10),
                         )
                       : messageChat.type == TypeMessage.image
                           ? Container(
@@ -356,7 +357,7 @@ class ChatPageState extends State<ChatPage> {
                                         ImageChunkEvent? loadingProgress) {
                                       if (loadingProgress == null) return child;
                                       return Container(
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                           color: ColorConstants.greyColor2,
                                           borderRadius: BorderRadius.all(
                                             Radius.circular(8),
@@ -391,7 +392,7 @@ class ChatPageState extends State<ChatPage> {
                                         height: 200,
                                         fit: BoxFit.cover,
                                       ),
-                                      borderRadius: BorderRadius.all(
+                                      borderRadius: const BorderRadius.all(
                                         Radius.circular(8),
                                       ),
                                       clipBehavior: Clip.hardEdge,
@@ -400,8 +401,8 @@ class ChatPageState extends State<ChatPage> {
                                     height: 200,
                                     fit: BoxFit.cover,
                                   ),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(8)),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(8)),
                                   clipBehavior: Clip.hardEdge,
                                 ),
                                 onPressed: () {
@@ -416,9 +417,9 @@ class ChatPageState extends State<ChatPage> {
                                 style: ButtonStyle(
                                     padding:
                                         MaterialStateProperty.all<EdgeInsets>(
-                                            EdgeInsets.all(0))),
+                                            const EdgeInsets.all(0))),
                               ),
-                              margin: EdgeInsets.only(left: 10),
+                              margin: const EdgeInsets.only(left: 10),
                             )
                           : Container(
                               child: Image.asset(
@@ -441,22 +442,23 @@ class ChatPageState extends State<ChatPage> {
                         DateFormat('dd MMM kk:mm').format(
                             DateTime.fromMillisecondsSinceEpoch(
                                 int.parse(messageChat.timestamp))),
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: ColorConstants.greyColor,
                             fontSize: 12,
                             fontStyle: FontStyle.italic),
                       ),
-                      margin: EdgeInsets.only(left: 50, top: 5, bottom: 5),
+                      margin:
+                          const EdgeInsets.only(left: 50, top: 5, bottom: 5),
                     )
-                  : SizedBox.shrink()
+                  : const SizedBox.shrink()
             ],
             crossAxisAlignment: CrossAxisAlignment.start,
           ),
-          margin: EdgeInsets.only(bottom: 10),
+          margin: const EdgeInsets.only(bottom: 10),
         );
       }
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 
@@ -523,7 +525,7 @@ class ChatPageState extends State<ChatPage> {
                   );
                 },
                 errorBuilder: (context, object, stackTrace) {
-                  return Icon(
+                  return const Icon(
                     Icons.account_circle,
                     size: 35,
                     color: ColorConstants.greyColor,
@@ -533,18 +535,18 @@ class ChatPageState extends State<ChatPage> {
                 height: 35,
                 fit: BoxFit.cover,
               ),
-              borderRadius: BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(15),
               ),
               clipBehavior: Clip.hardEdge,
             ),
-            SizedBox(
+            const SizedBox(
               width: 15,
             ),
             Expanded(
               child: Text(
                 this.peerNickname,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 22.0,
                     fontFamily: AppConstants.fontfamily,
                     overflow: TextOverflow.fade),
@@ -558,22 +560,22 @@ class ChatPageState extends State<ChatPage> {
             onPressed: () {
               //Inserir aquii a chamadaaaa
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.phone_in_talk_rounded,
               size: 28,
             ),
-            label: Text(''),
+            label: const Text(''),
             style: ElevatedButton.styleFrom(elevation: 0.0),
           ),
           ElevatedButton.icon(
             onPressed: () {
               //Inserir aquii a video chamadaaaa
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.video_call,
               size: 28,
             ),
-            label: Text(''),
+            label: const Text(''),
             style: ElevatedButton.styleFrom(elevation: 0.0),
           )
         ],
@@ -587,7 +589,7 @@ class ChatPageState extends State<ChatPage> {
                 buildListMessage(),
 
                 // Sticker
-                isShowSticker ? buildSticker() : SizedBox.shrink(),
+                isShowSticker ? buildSticker() : const SizedBox.shrink(),
 
                 // Input content
                 buildInput(),
@@ -707,11 +709,11 @@ class ChatPageState extends State<ChatPage> {
           ],
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         ),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             border: Border(
                 top: BorderSide(color: ColorConstants.greyColor2, width: 0.5)),
             color: Colors.white),
-        padding: EdgeInsets.all(5),
+        padding: const EdgeInsets.all(5),
         height: 180,
       ),
     );
@@ -719,7 +721,7 @@ class ChatPageState extends State<ChatPage> {
 
   Widget buildLoading() {
     return Positioned(
-      child: isLoading ? LoadingView() : SizedBox.shrink(),
+      child: isLoading ? const LoadingView() : const SizedBox.shrink(),
     );
   }
 
@@ -730,9 +732,9 @@ class ChatPageState extends State<ChatPage> {
           // Button send image
           Material(
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 1),
+              margin: const EdgeInsets.symmetric(horizontal: 1),
               child: IconButton(
-                icon: Icon(Icons.image),
+                icon: const Icon(Icons.image),
                 onPressed: getImage,
                 color: ColorConstants.primaryColor,
               ),
@@ -741,9 +743,9 @@ class ChatPageState extends State<ChatPage> {
           ),
           Material(
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 1),
+              margin: const EdgeInsets.symmetric(horizontal: 1),
               child: IconButton(
-                icon: Icon(Icons.face),
+                icon: const Icon(Icons.face),
                 onPressed: getSticker,
                 color: ColorConstants.primaryColor,
               ),
@@ -753,29 +755,27 @@ class ChatPageState extends State<ChatPage> {
 
           // Edit text
           Flexible(
-            child: Container(
-              child: TextField(
-                onSubmitted: (value) {
-                  onSendMessage(textEditingController.text, TypeMessage.text);
-                },
-                style:
-                    TextStyle(color: ColorConstants.primaryColor, fontSize: 15),
-                controller: textEditingController,
-                decoration: InputDecoration.collapsed(
-                  hintText: 'Type your message...',
-                  hintStyle: TextStyle(color: ColorConstants.greyColor),
-                ),
-                focusNode: focusNode,
+            child: TextField(
+              onSubmitted: (value) {
+                onSendMessage(textEditingController.text, TypeMessage.text);
+              },
+              style: const TextStyle(
+                  color: ColorConstants.primaryColor, fontSize: 15),
+              controller: textEditingController,
+              decoration: const InputDecoration.collapsed(
+                hintText: 'Type your message...',
+                hintStyle: TextStyle(color: ColorConstants.greyColor),
               ),
+              focusNode: focusNode,
             ),
           ),
 
           // Button send message
           Material(
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 8),
+              margin: const EdgeInsets.symmetric(horizontal: 8),
               child: IconButton(
-                icon: Icon(Icons.send),
+                icon: const Icon(Icons.send),
                 onPressed: () =>
                     onSendMessage(textEditingController.text, TypeMessage.text),
                 color: ColorConstants.primaryColor,
@@ -787,7 +787,7 @@ class ChatPageState extends State<ChatPage> {
       ),
       width: double.infinity,
       height: 50,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           border: Border(
               top: BorderSide(color: ColorConstants.greyColor2, width: 0.5)),
           color: Colors.white),
@@ -803,9 +803,9 @@ class ChatPageState extends State<ChatPage> {
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasData) {
                   listMessage = snapshot.data!.docs;
-                  if (listMessage.length > 0) {
+                  if (listMessage.isNotEmpty) {
                     return ListView.builder(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       itemBuilder: (context, index) =>
                           buildItem(index, snapshot.data?.docs[index]),
                       itemCount: snapshot.data?.docs.length,
@@ -813,10 +813,10 @@ class ChatPageState extends State<ChatPage> {
                       controller: listScrollController,
                     );
                   } else {
-                    return Center(child: Text("No message here yet..."));
+                    return const Center(child: Text("No message here yet..."));
                   }
                 } else {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(
                       color: ColorConstants.themeColor,
                     ),
@@ -824,7 +824,7 @@ class ChatPageState extends State<ChatPage> {
                 }
               },
             )
-          : Center(
+          : const Center(
               child: CircularProgressIndicator(
                 color: ColorConstants.themeColor,
               ),

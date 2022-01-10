@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:Passenger/constants/app_constants.dart';
-import 'package:Passenger/constants/color_constants.dart';
 import 'package:Passenger/providers/auth_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +7,7 @@ import '../widgets/widgets.dart';
 import 'pages.dart';
 
 class SignupPage extends StatefulWidget {
-  SignupPage({Key? key}) : super(key: key);
+  const SignupPage({Key? key}) : super(key: key);
 
   @override
   _SignupPageState createState() => _SignupPageState();
@@ -45,7 +43,7 @@ class _SignupPageState extends State<SignupPage> {
         children: [
           Container(
               alignment: Alignment.center,
-              padding: EdgeInsets.fromLTRB(10, 10, 10, 30),
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 30),
               child: const Text(
                 'Passenger',
                 style: TextStyle(
@@ -55,7 +53,7 @@ class _SignupPageState extends State<SignupPage> {
                 ),
               )),
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: TextFormField(
               validator: (username) {
                 if (username == null || username.isEmpty) {
@@ -64,14 +62,14 @@ class _SignupPageState extends State<SignupPage> {
                 return null;
               },
               controller: usernameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Username',
               ),
             ),
           ),
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: TextFormField(
               validator: (email) {
                 if (email == null ||
@@ -83,14 +81,14 @@ class _SignupPageState extends State<SignupPage> {
                 return null;
               },
               controller: emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Email',
               ),
             ),
           ),
           Container(
-            padding: EdgeInsets.fromLTRB(10, 10, 10, 20),
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
             child: TextFormField(
               obscureText: true,
               validator: (password) {
@@ -110,15 +108,15 @@ class _SignupPageState extends State<SignupPage> {
           ),
           Positioned(
             child: authProvider.status == Status.authenticating
-                ? LoadingView()
-                : SizedBox.shrink(),
+                ? const LoadingView()
+                : const SizedBox.shrink(),
           ),
           Row(
             children: [
               Expanded(
                 child: Container(
                     height: 50,
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: TextButton(
                       style: TextButton.styleFrom(
                         primary: Colors.white,
@@ -144,7 +142,7 @@ class _SignupPageState extends State<SignupPage> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => HomePage(),
+                                builder: (context) => const HomePage(),
                               ),
                             );
                           }
@@ -162,7 +160,7 @@ class _SignupPageState extends State<SignupPage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LoginPage(),
+                    builder: (context) => const LoginPage(),
                   ),
                 );
               },

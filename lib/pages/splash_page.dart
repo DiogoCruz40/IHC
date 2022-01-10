@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'pages.dart';
 
 class SplashPage extends StatefulWidget {
-  SplashPage({Key? key}) : super(key: key);
+  const SplashPage({Key? key}) : super(key: key);
 
   @override
   SplashPageState createState() => SplashPageState();
@@ -16,7 +16,7 @@ class SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       // just delay for showing this slash page clearer because it too fast
       checkSignedIn();
     });
@@ -28,13 +28,13 @@ class SplashPageState extends State<SplashPage> {
     if (isLoggedIn) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
       return;
     }
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
   }
 
@@ -50,8 +50,8 @@ class SplashPageState extends State<SplashPage> {
               width: 100,
               height: 100,
             ),
-            SizedBox(height: 20),
-            Container(
+            const SizedBox(height: 20),
+            const SizedBox(
               width: 20,
               height: 20,
               child:

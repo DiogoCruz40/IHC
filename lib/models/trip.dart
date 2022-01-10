@@ -1,4 +1,3 @@
-import 'package:Passenger/models/models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Passenger/constants/constants.dart';
 
