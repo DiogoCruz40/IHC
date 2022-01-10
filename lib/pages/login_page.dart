@@ -148,7 +148,7 @@ class LoginPageState extends State<LoginPage> {
                   ),
                 );
               },
-              child: const Text('Don´t have an account yet? Sign up',
+              child: const Text('Don\'t have an account yet? Sign up',
                   style: TextStyle(
                       color: Colors.blue,
                       fontFamily: 'SansRegular',
