@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:Passenger/constants/app_constants.dart';
-import 'package:Passenger/constants/color_constants.dart';
 import 'package:Passenger/constants/constants.dart';
 import 'package:Passenger/providers/providers.dart';
 import 'package:Passenger/utils/utils.dart';
@@ -19,7 +18,7 @@ import '../widgets/widgets.dart';
 import 'pages.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State createState() => HomePageState();
@@ -35,7 +34,7 @@ class HomePageState extends State<HomePage> {
   final ScrollController listScrollController = ScrollController();
 
   int _limit = 20;
-  int _limitIncrement = 20;
+  final int _limitIncrement = 20;
   String _textSearch = "";
   bool isLoading = false;
 
@@ -63,7 +62,7 @@ class HomePageState extends State<HomePage> {
       currentUserId = authProvider.getUserFirebaseId()!;
     } else {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LoginPage()),
+        MaterialPageRoute(builder: (context) => const LoginPage()),
         (Route<dynamic> route) => false,
       );
     }
@@ -102,9 +101,9 @@ class HomePageState extends State<HomePage> {
 
   void configLocalNotification() {
     AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
+        const AndroidInitializationSettings('app_icon');
     IOSInitializationSettings initializationSettingsIOS =
-        IOSInitializationSettings();
+        const IOSInitializationSettings();
     InitializationSettings initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
@@ -124,8 +123,8 @@ class HomePageState extends State<HomePage> {
     if (choice.title == 'Log out') {
       handleSignOut();
     } else {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => SettingsPage()));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const SettingsPage()));
     }
   }
 
@@ -139,7 +138,7 @@ class HomePageState extends State<HomePage> {
       priority: Priority.high,
     );
     IOSNotificationDetails iOSPlatformChannelSpecifics =
-        IOSNotificationDetails();
+        const IOSNotificationDetails();
     NotificationDetails platformChannelSpecifics = NotificationDetails(
         android: androidPlatformChannelSpecifics,
         iOS: iOSPlatformChannelSpecifics);
@@ -172,26 +171,26 @@ class HomePageState extends State<HomePage> {
             children: <Widget>[
               Container(
                 color: ColorConstants.themeColor,
-                padding: EdgeInsets.only(bottom: 10, top: 10),
+                padding: const EdgeInsets.only(bottom: 10, top: 10),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Container(
-                      child: Icon(
+                      child: const Icon(
                         Icons.exit_to_app,
                         size: 30,
                         color: Colors.white,
                       ),
-                      margin: EdgeInsets.only(bottom: 10),
+                      margin: const EdgeInsets.only(bottom: 10),
                     ),
-                    Text(
+                    const Text(
                       'Exit app',
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold),
                     ),
-                    Text(
+                    const Text(
                       'Are you sure to exit app?',
                       style: TextStyle(color: Colors.white70, fontSize: 14),
                     ),
@@ -205,13 +204,13 @@ class HomePageState extends State<HomePage> {
                 child: Row(
                   children: <Widget>[
                     Container(
-                      child: Icon(
+                      child: const Icon(
                         Icons.cancel,
                         color: ColorConstants.primaryColor,
                       ),
-                      margin: EdgeInsets.only(right: 10),
+                      margin: const EdgeInsets.only(right: 10),
                     ),
-                    Text(
+                    const Text(
                       'Cancel',
                       style: TextStyle(
                           color: ColorConstants.primaryColor,
@@ -227,13 +226,13 @@ class HomePageState extends State<HomePage> {
                 child: Row(
                   children: <Widget>[
                     Container(
-                      child: Icon(
+                      child: const Icon(
                         Icons.check_circle,
                         color: ColorConstants.primaryColor,
                       ),
-                      margin: EdgeInsets.only(right: 10),
+                      margin: const EdgeInsets.only(right: 10),
                     ),
-                    Text(
+                    const Text(
                       'Yes',
                       style: TextStyle(
                           color: ColorConstants.primaryColor,
@@ -255,7 +254,7 @@ class HomePageState extends State<HomePage> {
   Future<void> handleSignOut() async {
     authProvider.handleSignOut();
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
       (Route<dynamic> route) => false,
     );
   }
@@ -267,7 +266,7 @@ class HomePageState extends State<HomePage> {
         length: choicesofpage.length,
         child: Scaffold(
           appBar: AppBar(
-            title: Text(
+            title: const Text(
               AppConstants.appTitle,
               style:
                   TextStyle(fontSize: 36, fontFamily: AppConstants.fontfamily),
@@ -291,12 +290,17 @@ class HomePageState extends State<HomePage> {
                 // users(),
                 TabBarView(
                   children: choicesofpage.map((Choice choice) {
-                    return ChoicePage(choice: choice, users: users());
+                    return ChoicePage(
+                      choice: choice,
+                      users: users(),
+                      userTrips: userTrips(),
+                    );
                   }).toList(),
                 ),
                 // Loading
                 Positioned(
-                  child: isLoading ? LoadingView() : SizedBox.shrink(),
+                  child:
+                      isLoading ? const LoadingView() : const SizedBox.shrink(),
                 )
               ],
             ),
@@ -320,19 +324,56 @@ class HomePageState extends State<HomePage> {
               if (snapshot.hasData) {
                 if ((snapshot.data?.docs.length ?? 0) > 0) {
                   return ListView.builder(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     itemBuilder: (context, index) =>
                         buildItem(context, snapshot.data?.docs[index]),
                     itemCount: snapshot.data?.docs.length,
                     controller: listScrollController,
                   );
                 } else {
-                  return Center(
+                  return const Center(
                     child: Text("No users"),
                   );
                 }
               } else {
-                return Center(
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: ColorConstants.themeColor,
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget userTrips() {
+    return Column(
+      children: [
+        Expanded(
+          child: StreamBuilder<QuerySnapshot>(
+            stream: homeProvider.getStreamFireStore(
+                FirestoreConstants.pathTripCollection, _limit, _textSearch),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasData) {
+                if ((snapshot.data?.docs.length ?? 0) > 0) {
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(10),
+                    itemBuilder: (context, index) =>
+                        buildTripItem(context, snapshot.data?.docs[index]),
+                    itemCount: snapshot.data?.docs.length,
+                    controller: listScrollController,
+                  );
+                } else {
+                  return const Center(
+                    child: Text("You have no trips"),
+                  );
+                }
+              } else {
+                return const Center(
                   child: CircularProgressIndicator(
                     color: ColorConstants.themeColor,
                   ),
@@ -351,8 +392,8 @@ class HomePageState extends State<HomePage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(Icons.search, color: ColorConstants.greyColor, size: 20),
-          SizedBox(width: 5),
+          const Icon(Icons.search, color: ColorConstants.greyColor, size: 20),
+          const SizedBox(width: 5),
           Expanded(
             child: TextFormField(
               textInputAction: TextInputAction.search,
@@ -372,12 +413,12 @@ class HomePageState extends State<HomePage> {
                   }
                 });
               },
-              decoration: InputDecoration.collapsed(
+              decoration: const InputDecoration.collapsed(
                 hintText: 'Search nickname (you have to type exactly string)',
                 hintStyle:
                     TextStyle(fontSize: 13, color: ColorConstants.greyColor),
               ),
-              style: TextStyle(fontSize: 13),
+              style: const TextStyle(fontSize: 13),
             ),
           ),
           StreamBuilder<bool>(
@@ -392,9 +433,9 @@ class HomePageState extends State<HomePage> {
                             _textSearch = "";
                           });
                         },
-                        child: Icon(Icons.clear_rounded,
+                        child: const Icon(Icons.clear_rounded,
                             color: ColorConstants.greyColor, size: 20))
-                    : SizedBox.shrink();
+                    : const SizedBox.shrink();
               }),
         ],
       ),
@@ -402,8 +443,8 @@ class HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.circular(16),
         color: ColorConstants.greyColor2,
       ),
-      padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-      margin: EdgeInsets.fromLTRB(16, 18, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 18, 16, 8),
     );
   }
 
@@ -425,7 +466,7 @@ class HomePageState extends State<HomePage> {
                   ),
                   Text(
                     choice.title,
-                    style: TextStyle(color: ColorConstants.primaryColor),
+                    style: const TextStyle(color: ColorConstants.primaryColor),
                   ),
                 ],
               ));
@@ -438,7 +479,7 @@ class HomePageState extends State<HomePage> {
     if (document != null) {
       UserChat userChat = UserChat.fromDocument(document);
       if (userChat.id == currentUserId) {
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
       } else {
         return Container(
           child: TextButton(
@@ -454,7 +495,7 @@ class HomePageState extends State<HomePage> {
                           loadingBuilder: (BuildContext context, Widget child,
                               ImageChunkEvent? loadingProgress) {
                             if (loadingProgress == null) return child;
-                            return Container(
+                            return SizedBox(
                               width: 50,
                               height: 50,
                               child: Center(
@@ -472,19 +513,19 @@ class HomePageState extends State<HomePage> {
                             );
                           },
                           errorBuilder: (context, object, stackTrace) {
-                            return Icon(
+                            return const Icon(
                               Icons.account_circle,
                               size: 50,
                               color: ColorConstants.greyColor,
                             );
                           },
                         )
-                      : Icon(
+                      : const Icon(
                           Icons.account_circle,
                           size: 50,
                           color: ColorConstants.greyColor,
                         ),
-                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                  borderRadius: const BorderRadius.all(Radius.circular(25)),
                   clipBehavior: Clip.hardEdge,
                 ),
                 Flexible(
@@ -495,25 +536,25 @@ class HomePageState extends State<HomePage> {
                           child: Text(
                             'Nickname: ${userChat.nickname}',
                             maxLines: 1,
-                            style:
-                                TextStyle(color: ColorConstants.primaryColor),
+                            style: const TextStyle(
+                                color: ColorConstants.primaryColor),
                           ),
                           alignment: Alignment.centerLeft,
-                          margin: EdgeInsets.fromLTRB(10, 0, 0, 5),
+                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 5),
                         ),
                         Container(
                           child: Text(
                             'About me: ${userChat.aboutMe}',
                             maxLines: 1,
-                            style:
-                                TextStyle(color: ColorConstants.primaryColor),
+                            style: const TextStyle(
+                                color: ColorConstants.primaryColor),
                           ),
                           alignment: Alignment.centerLeft,
-                          margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                         )
                       ],
                     ),
-                    margin: EdgeInsets.only(left: 20),
+                    margin: const EdgeInsets.only(left: 20),
                   ),
                 ),
               ],
@@ -537,24 +578,112 @@ class HomePageState extends State<HomePage> {
               backgroundColor:
                   MaterialStateProperty.all<Color>(ColorConstants.greyColor2),
               shape: MaterialStateProperty.all<OutlinedBorder>(
-                RoundedRectangleBorder(
+                const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
               ),
             ),
           ),
-          margin: EdgeInsets.only(bottom: 10, left: 5, right: 5),
+          margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
         );
       }
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget buildTripItem(BuildContext context, DocumentSnapshot? document) {
+    if (document != null) {
+      Trip trip = Trip.fromDocument(document);
+      if (trip.user != currentUserId) {
+        return const SizedBox.shrink();
+      } else {
+        return Container(
+          child: TextButton(
+            child: Row(
+              children: <Widget>[
+                Flexible(
+                  child: Container(
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          child: Text(
+                            '${trip.country}, ${trip.location}',
+                            maxLines: 1,
+                            style: const TextStyle(
+                                color: ColorConstants.primaryColor),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 5),
+                        ),
+                        Container(
+                          child: Text(
+                            'Start Date: ${trip.startDate.toDate()}',
+                            maxLines: 1,
+                            style: const TextStyle(
+                                color: ColorConstants.primaryColor),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        ),
+                        Container(
+                          child: Text(
+                            'End Date: ${trip.startDate.toDate()}',
+                            maxLines: 1,
+                            style: const TextStyle(
+                                color: ColorConstants.primaryColor),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        ),
+                        IconButton(
+                            onPressed: () {}, icon: const Icon(Icons.edit)),
+                        IconButton(
+                            onPressed: () {}, icon: const Icon(Icons.delete))
+                      ],
+                    ),
+                    margin: const EdgeInsets.only(left: 20),
+                  ),
+                ),
+              ],
+            ),
+            onPressed: () {
+              if (Utilities.isKeyboardShowing()) {
+                Utilities.closeKeyboard(context);
+              }
+              /*Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatPage(
+                    peerId: userChat.id,
+                    peerAvatar: userChat.photoUrl,
+                    peerNickname: userChat.nickname,
+                  ),
+                ),
+              );*/
+            },
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(ColorConstants.greyColor2),
+              shape: MaterialStateProperty.all<OutlinedBorder>(
+                const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+              ),
+            ),
+          ),
+          margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+        );
+      }
+    } else {
+      return const SizedBox.shrink();
     }
   }
 
   List<Choice> choicesofpage = <Choice>[
-    Choice(title: 'HOME', icon: Icons.home),
-    Choice(title: 'SEARCH', icon: Icons.search),
-    Choice(title: 'CHAT', icon: Icons.chat_rounded),
+    const Choice(title: AppConstants.homeTitle, icon: Icons.home),
+    const Choice(title: AppConstants.searchTitle, icon: Icons.search),
+    const Choice(title: AppConstants.chatTitle, icon: Icons.chat_rounded),
   ];
 }
 
@@ -565,18 +694,31 @@ class Choice {
 }
 
 class ChoicePage extends StatelessWidget {
-  const ChoicePage({Key? key, required this.choice, required this.users})
+  const ChoicePage(
+      {Key? key,
+      required this.choice,
+      required this.users,
+      required this.userTrips})
       : super(key: key);
   final Choice choice;
   final Widget users;
+  final Widget userTrips;
   @override
   Widget build(BuildContext context) {
-    if (choice.title == 'SEARCH') {
-      //return search();
-    } else if (choice.title == 'HOME') {
-      //return homechoice();
-    } else if (choice.title == 'CHAT') {
-      return users;
+    switch (choice.title) {
+      case AppConstants.homeTitle:
+        {
+          return userTrips;
+        }
+      case AppConstants.searchTitle:
+        {
+          //return search();
+          break;
+        }
+      case AppConstants.chatTitle:
+        {
+          return users;
+        }
     }
     return Card(
         color: Colors.white,

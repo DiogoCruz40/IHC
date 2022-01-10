@@ -1,7 +1,5 @@
 import 'package:Passenger/pages/sign_up_page.dart';
 import 'package:flutter/material.dart';
-import 'package:Passenger/constants/app_constants.dart';
-import 'package:Passenger/constants/color_constants.dart';
 import 'package:Passenger/providers/auth_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +8,7 @@ import '../widgets/widgets.dart';
 import 'pages.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key? key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   LoginPageState createState() => LoginPageState();
@@ -46,7 +44,7 @@ class LoginPageState extends State<LoginPage> {
         children: [
           Container(
               alignment: Alignment.center,
-              padding: EdgeInsets.fromLTRB(10, 10, 10, 30),
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 30),
               child: const Text(
                 'Passenger',
                 style: TextStyle(
@@ -56,7 +54,7 @@ class LoginPageState extends State<LoginPage> {
                 ),
               )),
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: TextFormField(
               validator: (email) {
                 if (email == null ||
@@ -68,14 +66,14 @@ class LoginPageState extends State<LoginPage> {
                 return null;
               },
               controller: emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Email',
               ),
             ),
           ),
           Container(
-            padding: EdgeInsets.fromLTRB(10, 10, 10, 20),
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
             child: TextFormField(
               obscureText: true,
               validator: (password) {
@@ -95,15 +93,15 @@ class LoginPageState extends State<LoginPage> {
           ),
           Positioned(
             child: authProvider.status == Status.authenticating
-                ? LoadingView()
-                : SizedBox.shrink(),
+                ? const LoadingView()
+                : const SizedBox.shrink(),
           ),
           Row(
             children: [
               Expanded(
                 child: Container(
                     height: 50,
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: TextButton(
                       style: TextButton.styleFrom(
                         primary: Colors.white,
@@ -128,7 +126,7 @@ class LoginPageState extends State<LoginPage> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => HomePage(),
+                                builder: (context) => const HomePage(),
                               ),
                             );
                           }
@@ -146,11 +144,11 @@ class LoginPageState extends State<LoginPage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SignupPage(),
+                    builder: (context) => const SignupPage(),
                   ),
                 );
               },
-              child: const Text('Don´t have an account yet? Sign up',
+              child: const Text('Don\'t have an account yet? Sign up',
                   style: TextStyle(
                       color: Colors.blue,
                       fontFamily: 'SansRegular',
