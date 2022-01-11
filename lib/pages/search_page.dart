@@ -127,65 +127,95 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget buildItem(BuildContext context, DocumentSnapshot? document) {
     if (document != null) {
+      String locale = Localizations.localeOf(context).languageCode;
+      initializeDateFormatting(locale, null);
       Trip trip = Trip.fromDocument(document);
 
       return Container(
-        child: TextButton(
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                child: Container(
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        child: Text(
-                          'Localização: ${trip.location}',
-                          maxLines: 1,
-                          style: const TextStyle(
-                              color: ColorConstants.primaryColor),
-                        ),
-                        alignment: Alignment.centerLeft,
-                        margin: const EdgeInsets.fromLTRB(10, 0, 0, 5),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ListTile(
+                    title: Text('${trip.country}, ${trip.location}'),
+                    subtitle: Row(children: [
+                      Flexible(
+                          child: Column(
+                        children: [
+                          Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                  'Start Date: ${DateFormat.yMd(locale).format(trip.startDate.toDate())}')),
+                          Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                  'End Date: ${DateFormat.yMd(locale).format(trip.endDate.toDate())}')),
+                        ],
+                      ))
+                    ]),
+                    leading: SizedBox(
+                      width: 100,
+                      child: Image.network(
+                        'photoUrl',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, object, stackTrace) {
+                          return const Icon(
+                            Icons.image,
+                            size: 50,
+                            color: ColorConstants.greyColor,
+                          );
+                        },
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return SizedBox(
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: ColorConstants.themeColor,
+                                value: loadingProgress.expectedTotalBytes !=
+                                            null &&
+                                        loadingProgress.expectedTotalBytes !=
+                                            null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                      Container(
-                        child: Text(
-                          'Descrição: ${trip.description}',
-                          maxLines: 1,
-                          style: const TextStyle(
-                              color: ColorConstants.primaryColor),
-                        ),
-                        alignment: Alignment.centerLeft,
-                        margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                      )
-                    ],
+                    ),
                   ),
-                  margin: const EdgeInsets.only(left: 20),
                 ),
-              ),
-            ],
-          ),
-          onPressed: () {
-            if (Utilities.isKeyboardShowing()) {
-              Utilities.closeKeyboard(context);
-            }
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => ChatPage(
-            //       peerId: userChat.id,
-            //       peerAvatar: userChat.photoUrl,
-            //       peerNickname: userChat.nickname,
-            //     ),
-            //   ),
-            // );
-          },
-          style: ButtonStyle(
-            backgroundColor:
-                MaterialStateProperty.all<Color>(ColorConstants.greyColor2),
-            shape: MaterialStateProperty.all<OutlinedBorder>(
-              const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-              ),
+                Column(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.star_border),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.open_in_full_outlined),
+                      onPressed: () {
+                        if (Utilities.isKeyboardShowing()) {
+                          Utilities.closeKeyboard(context);
+                        }
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => ChatPage(
+                        //       peerId: userChat.id,
+                        //       peerAvatar: userChat.photoUrl,
+                        //       peerNickname: userChat.nickname,
+                        //     ),
+                        //   ),
+                        // );
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
