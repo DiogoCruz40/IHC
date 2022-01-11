@@ -668,7 +668,30 @@ class HomePageState extends State<HomePage> {
                         IconButton(
                           icon: const Icon(Icons.delete),
                           color: Colors.red,
-                          onPressed: () {},
+                          onPressed: () => showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text(
+                                  'Delete "${trip.country}, ${trip.location}"'),
+                              content: const Text(
+                                  'Are you sure you want to delete this trip?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, 'No'),
+                                  child: const Text('No'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    homeProvider.removeDataFirestore(
+                                        FirestoreConstants.pathTripCollection,
+                                        trip.id);
+                                    Navigator.pop(context, 'Yes');
+                                  },
+                                  child: const Text('Yes'),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     )),

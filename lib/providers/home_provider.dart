@@ -14,9 +14,16 @@ class HomeProvider {
         .update(dataNeedUpdate);
   }
 
+  Future<void> removeDataFirestore(String collectionPath, String path) {
+    return FirebaseFirestore.instance
+        .collection(collectionPath)
+        .doc(path)
+        .delete();
+  }
+
   Stream<QuerySnapshot> getStreamFireStore(
       String pathCollection, int limit, String? textSearch) {
-    if (textSearch?.isNotEmpty == true) {
+    if (textSearch != null && textSearch.isNotEmpty == true) {
       return firebaseFirestore
           .collection(pathCollection)
           .orderBy(FirestoreConstants.nickname)
