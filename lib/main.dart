@@ -63,6 +63,11 @@ class MyApp extends StatelessWidget {
             firebaseStorage: this.firebaseStorage,
           ),
         ),
+        Provider<SearchProvider>(
+          create: (_) => SearchProvider(
+            firebaseFirestore: this.firebaseFirestore,
+          ),
+        ),
       ],
       child: MaterialApp(
         title: AppConstants.appTitle,

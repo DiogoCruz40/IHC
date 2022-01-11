@@ -122,6 +122,7 @@ class ChatPageState extends State<ChatPage> {
     ImagePicker imagePicker = ImagePicker();
     PickedFile? pickedFile;
 
+    // ignore: deprecated_member_use
     pickedFile = await imagePicker.getImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       imageFile = File(pickedFile.path);
