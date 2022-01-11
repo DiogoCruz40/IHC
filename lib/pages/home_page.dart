@@ -667,7 +667,10 @@ class HomePageState extends State<HomePage> {
                         IconButton(
                           icon: const Icon(Icons.delete),
                           color: Colors.red,
-                          onPressed: () {},
+                          onPressed: () {
+                            homeProvider.removeDataFirestore(
+                                FirestoreConstants.pathTripCollection, trip.id);
+                          },
                         ),
                       ],
                     )),
