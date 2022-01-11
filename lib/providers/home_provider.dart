@@ -27,7 +27,7 @@ class HomeProvider {
       return firebaseFirestore
           .collection(pathCollection)
           .orderBy(FirestoreConstants.nickname)
-          .startAt([textSearch]).endAt([textSearch! + '\uf8ff']).snapshots();
+          .startAt([textSearch]).endAt([textSearch + '\uf8ff']).snapshots();
     } else {
       return firebaseFirestore.collection(pathCollection).snapshots();
     }

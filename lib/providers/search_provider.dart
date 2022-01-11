@@ -2,6 +2,7 @@ import 'package:Passenger/constants/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Passenger/constants/firestore_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:Passenger/utils/utils.dart';
 
 class SearchProvider {
   final FirebaseFirestore firebaseFirestore;
@@ -28,13 +29,4 @@ class SearchProvider {
       return firebaseFirestore.collection(pathCollection).snapshots();
     }
   }
-}
-
-extension StringCasingExtension on String {
-  String toCapitalized() =>
-      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
-  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
-      .split(' ')
-      .map((str) => str.toCapitalized())
-      .join(' ');
 }
