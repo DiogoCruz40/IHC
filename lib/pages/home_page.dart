@@ -296,6 +296,7 @@ class HomePageState extends State<HomePage> {
                       choice: choice,
                       users: users(),
                       userTrips: userTrips(),
+                      currentuserId: currentUserId,
                     );
                   }).toList(),
                 ),
@@ -699,11 +700,13 @@ class ChoicePage extends StatelessWidget {
       {Key? key,
       required this.choice,
       required this.users,
-      required this.userTrips})
+      required this.userTrips,
+      required this.currentuserId})
       : super(key: key);
   final Choice choice;
   final Widget users;
   final Widget userTrips;
+  final String currentuserId;
   @override
   Widget build(BuildContext context) {
     switch (choice.title) {
@@ -713,7 +716,7 @@ class ChoicePage extends StatelessWidget {
         }
       case AppConstants.searchTitle:
         {
-          return SearchPage();
+          return SearchPage(currentuserId: currentuserId);
         }
       case AppConstants.chatTitle:
         {

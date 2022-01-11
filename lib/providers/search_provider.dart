@@ -19,6 +19,7 @@ class SearchProvider {
   Stream<QuerySnapshot> getStreamFireStore(
       String pathCollection, int limit, String? textSearch) {
     if (textSearch?.isNotEmpty == true) {
+      textSearch = textSearch?.toTitleCase();
       return firebaseFirestore
           .collection(pathCollection)
           .orderBy(FirestoreConstants.location)
@@ -27,4 +28,13 @@ class SearchProvider {
       return firebaseFirestore.collection(pathCollection).snapshots();
     }
   }
+}
+
+extension StringCasingExtension on String {
+  String toCapitalized() =>
+      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
+      .split(' ')
+      .map((str) => str.toCapitalized())
+      .join(' ');
 }
