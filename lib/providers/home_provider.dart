@@ -51,7 +51,7 @@ class HomeProvider {
       String pathCollectionMessages,
       String pathCollectionUsers,
       String currentuserid,
-      String? textSearch) async {
+      String? textSearch) async* {
     var documentreference = await firebaseFirestore
         .collection(FirestoreConstants.pathMessageCollection)
         .get();
@@ -76,12 +76,12 @@ class HomeProvider {
       //     .collection(pathCollectionUsers)
       //     .orderBy(FirestoreConstants.nickname)
       //     .startAt([textSearch]).endAt([textSearch + '\uf8ff']).snapshots();
-      return firebaseFirestore
+      yield* firebaseFirestore
           .collection(pathCollectionUsers)
           .where("id", whereIn: docsidsto)
           .snapshots();
     } else {
-      return firebaseFirestore
+      yield* firebaseFirestore
           .collection(pathCollectionUsers)
           .where('id', whereIn: docsidsto)
           .snapshots();

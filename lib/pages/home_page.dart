@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:passenger/constants/constants.dart';
+import 'package:passenger/pages/chats_list_page.dart';
 import 'package:passenger/providers/providers.dart';
 import 'package:passenger/utils/utils.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -46,7 +47,6 @@ class HomePageState extends State<HomePage> {
 
   final StreamController<bool> btnClearController =
       StreamController<bool>.broadcast();
-  TextEditingController searchBarTec = TextEditingController();
 
   List<PopupChoices> choices = <PopupChoices>[
     PopupChoices(title: 'Settings', icon: Icons.settings),
@@ -294,7 +294,6 @@ class HomePageState extends State<HomePage> {
                   children: choicesofpage.map((Choice choice) {
                     return ChoicePage(
                       choice: choice,
-                      users: users(),
                       userTrips: userTrips(),
                       currentuserId: currentUserId,
                     );
@@ -311,48 +310,6 @@ class HomePageState extends State<HomePage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget users() {
-    return Column(
-      children: [
-        buildSearchBar(),
-        Expanded(
-          child: StreamBuilder(
-            stream: homeProvider.getStreamUsersFireStore(
-                FirestoreConstants.pathMessageCollection,
-                FirestoreConstants.pathUserCollection,
-                currentUserId,
-                _textSearch),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasData) {
-                // print(snapshot.data());
-                if ((snapshot.data?.docs.length ?? 0) > 0) {
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(10),
-                    itemBuilder: (context, index) =>
-                        buildItem(context, snapshot.data?.docs[index]),
-                    itemCount: snapshot.data?.docs.length,
-                    controller: listScrollController,
-                  );
-                } else {
-                  return const Center(
-                    child: Text("No users"),
-                  );
-                }
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(
-                    color: ColorConstants.themeColor,
-                  ),
-                );
-              }
-            },
-          ),
-        ),
-      ],
     );
   }
 
@@ -438,68 +395,6 @@ class HomePageState extends State<HomePage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget buildSearchBar() {
-    return Container(
-      height: 40,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Icon(Icons.search, color: ColorConstants.greyColor, size: 20),
-          const SizedBox(width: 5),
-          Expanded(
-            child: TextFormField(
-              textInputAction: TextInputAction.search,
-              controller: searchBarTec,
-              onChanged: (value) {
-                searchDebouncer.run(() {
-                  if (value.isNotEmpty) {
-                    btnClearController.add(true);
-                    setState(() {
-                      _textSearch = value;
-                    });
-                  } else {
-                    btnClearController.add(false);
-                    setState(() {
-                      _textSearch = "";
-                    });
-                  }
-                });
-              },
-              decoration: const InputDecoration.collapsed(
-                hintText: 'Search nickname',
-                hintStyle:
-                    TextStyle(fontSize: 13, color: ColorConstants.greyColor),
-              ),
-              style: const TextStyle(fontSize: 13),
-            ),
-          ),
-          StreamBuilder<bool>(
-              stream: btnClearController.stream,
-              builder: (context, snapshot) {
-                return snapshot.data == true
-                    ? GestureDetector(
-                        onTap: () {
-                          searchBarTec.clear();
-                          btnClearController.add(false);
-                          setState(() {
-                            _textSearch = "";
-                          });
-                        },
-                        child: const Icon(Icons.clear_rounded,
-                            color: ColorConstants.greyColor, size: 20))
-                    : const SizedBox.shrink();
-              }),
-        ],
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: ColorConstants.greyColor2,
-      ),
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      margin: const EdgeInsets.fromLTRB(16, 18, 16, 8),
     );
   }
 
@@ -741,12 +636,10 @@ class ChoicePage extends StatelessWidget {
   const ChoicePage(
       {Key? key,
       required this.choice,
-      required this.users,
       required this.userTrips,
       required this.currentuserId})
       : super(key: key);
   final Choice choice;
-  final Widget users;
   final Widget userTrips;
   final String currentuserId;
   @override
@@ -762,7 +655,7 @@ class ChoicePage extends StatelessWidget {
         }
       case AppConstants.chatTitle:
         {
-          return users;
+          return ChatsListPage(currentuserId: currentuserId);
         }
       case AppConstants.profileTitle:
         {

@@ -8,3 +8,4 @@ export 'splash_page.dart';
 export 'search_page.dart';
 export 'trip_details_page.dart';
 export 'trip_form.dart';
+export 'chats_list_page.dart';
