@@ -13,11 +13,11 @@ import '../models/models.dart';
 import 'pages.dart';
 
 class SearchPage extends StatefulWidget {
-  String currentuserId;
-  SearchPage({Key? key, required this.currentuserId}) : super(key: key);
+  final String currentuserId;
+  const SearchPage({Key? key, required this.currentuserId}) : super(key: key);
 
   @override
-  _SearchPageState createState() => _SearchPageState(currentuserId);
+  State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
@@ -29,19 +29,17 @@ class _SearchPageState extends State<SearchPage> {
 
   late SearchProvider searchProvider;
   Debouncer searchDebouncer = Debouncer(milliseconds: 300);
-  String currentuserId;
+  late String currentuserId;
   final StreamController<bool> btnClearController =
       StreamController<bool>.broadcast();
   TextEditingController searchBarTec = TextEditingController();
 
-  _SearchPageState(this.currentuserId);
   @override
   void initState() {
-    super.initState();
-
+    currentuserId = widget.currentuserId;
     searchProvider = context.read<SearchProvider>();
-
     listScrollController.addListener(scrollListener);
+    super.initState();
   }
 
   void scrollListener() {

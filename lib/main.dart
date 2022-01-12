@@ -33,39 +33,39 @@ class MyApp extends StatelessWidget {
           create: (_) => AuthProvider(
             firebaseAuth: FirebaseAuth.instance,
             //  googleSignIn: GoogleSignIn(),
-            prefs: this.prefs,
-            firebaseFirestore: this.firebaseFirestore,
+            prefs: prefs,
+            firebaseFirestore: firebaseFirestore,
           ),
         ),
         Provider<SettingProvider>(
           create: (_) => SettingProvider(
-            prefs: this.prefs,
-            firebaseFirestore: this.firebaseFirestore,
-            firebaseStorage: this.firebaseStorage,
+            prefs: prefs,
+            firebaseFirestore: firebaseFirestore,
+            firebaseStorage: firebaseStorage,
           ),
         ),
         Provider<ProfileProvider>(
           create: (_) => ProfileProvider(
-            prefs: this.prefs,
-            firebaseFirestore: this.firebaseFirestore,
-            firebaseStorage: this.firebaseStorage,
+            prefs: prefs,
+            firebaseFirestore: firebaseFirestore,
+            firebaseStorage: firebaseStorage,
           ),
         ),
         Provider<HomeProvider>(
           create: (_) => HomeProvider(
-            firebaseFirestore: this.firebaseFirestore,
+            firebaseFirestore: firebaseFirestore,
           ),
         ),
         Provider<ChatProvider>(
           create: (_) => ChatProvider(
-            prefs: this.prefs,
-            firebaseFirestore: this.firebaseFirestore,
-            firebaseStorage: this.firebaseStorage,
+            prefs: prefs,
+            firebaseFirestore: firebaseFirestore,
+            firebaseStorage: firebaseStorage,
           ),
         ),
         Provider<SearchProvider>(
           create: (_) => SearchProvider(
-            firebaseFirestore: this.firebaseFirestore,
+            firebaseFirestore: firebaseFirestore,
           ),
         ),
       ],
