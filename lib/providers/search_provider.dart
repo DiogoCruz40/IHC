@@ -17,8 +17,8 @@ class SearchProvider {
   }
 
   Stream<QuerySnapshot> getStreamFireStore(
-      String pathCollection, int limit, String? textSearch) {
-    if (textSearch?.isNotEmpty == true) {
+      String pathCollection, int? limit, String? textSearch) {
+    if (textSearch?.isNotEmpty == true && limit != null) {
       textSearch = textSearch?.toTitleCase();
       return firebaseFirestore
           .collection(pathCollection)
@@ -27,6 +27,11 @@ class SearchProvider {
     } else {
       return firebaseFirestore.collection(pathCollection).snapshots();
     }
+  }
+
+  Future<DocumentSnapshot?> getDocumentFireStore(
+      String collectionPath, String docId) {
+    return firebaseFirestore.collection(collectionPath).doc(docId).get();
   }
 
   Stream<DocumentSnapshot> getUserFirestore(String pathCollection, String id) {

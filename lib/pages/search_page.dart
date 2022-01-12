@@ -26,7 +26,7 @@ class _SearchPageState extends State<SearchPage> {
   final int _limitIncrement = 20;
   String _textSearch = "";
   bool isLoading = false;
-
+  List<String> favourites = [];
   late SearchProvider searchProvider;
   Debouncer searchDebouncer = Debouncer(milliseconds: 300);
   late String currentuserId;
@@ -120,11 +120,13 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget buildItem(BuildContext context, DocumentSnapshot? document) {
+  Widget buildItem(BuildContext context, int index, DocumentSnapshot? document,
+      SearchProvider homeProvider) {
     if (document != null) {
       String locale = Localizations.localeOf(context).languageCode;
       initializeDateFormatting(locale, null);
       Trip trip = Trip.fromDocument(document);
+      bool isFavourite = favourites.contains(trip.id);
 
       if (trip.user == currentuserId) {
         return const SizedBox.shrink();
@@ -190,8 +192,18 @@ class _SearchPageState extends State<SearchPage> {
                   Column(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.star_border),
-                        onPressed: () {},
+                        icon: Icon(isFavourite
+                            ? Icons.star
+                            : Icons.star_border_outlined),
+                        onPressed: () {
+                          setState(() {
+                            if (!isFavourite) {
+                              favourites.add(trip.id);
+                            } else {
+                              favourites.remove(trip.id);
+                            }
+                          });
+                        },
                       ),
                       IconButton(
                         icon: const Icon(Icons.open_in_full_outlined),
@@ -236,8 +248,8 @@ class _SearchPageState extends State<SearchPage> {
                 if ((snapshot.data?.docs.length ?? 0) > 0) {
                   return ListView.builder(
                     padding: const EdgeInsets.all(10),
-                    itemBuilder: (context, index) =>
-                        buildItem(context, snapshot.data?.docs[index]),
+                    itemBuilder: (context, index) => buildItem(context, index,
+                        snapshot.data?.docs[index], searchProvider),
                     itemCount: snapshot.data?.docs.length,
                     controller: listScrollController,
                   );

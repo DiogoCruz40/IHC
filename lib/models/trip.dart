@@ -10,7 +10,6 @@ class Trip {
   Timestamp creationDate; // Data de Criação
   Timestamp startDate; // Data de Início
   Timestamp endDate; // Data de Fim
-  List<String> users;
 
   Trip({
     required this.id,
@@ -21,7 +20,6 @@ class Trip {
     required this.creationDate,
     required this.startDate,
     required this.endDate,
-    required this.users,
   });
 
   Map<String, dynamic> toJson() {
@@ -34,7 +32,6 @@ class Trip {
       FirestoreConstants.creationDate: creationDate,
       FirestoreConstants.startDate: startDate,
       FirestoreConstants.endDate: endDate,
-      //FirestoreConstants.users: users,
     };
   }
 
@@ -47,14 +44,8 @@ class Trip {
     Timestamp creationDate = doc.get(FirestoreConstants.creationDate);
     Timestamp startDate = doc.get(FirestoreConstants.startDate);
     Timestamp endDate = doc.get(FirestoreConstants.endDate);
-    List<String> users;
-    try {
-      users = doc.get(FirestoreConstants.users);
-    } catch (e) {
-      users = [];
-    }
 
-    Trip trip = Trip(
+    return Trip(
         id: id,
         user: user,
         country: country,
@@ -62,9 +53,6 @@ class Trip {
         description: description,
         creationDate: creationDate,
         startDate: startDate,
-        endDate: endDate,
-        users: users);
-    print(trip);
-    return trip;
+        endDate: endDate);
   }
 }
