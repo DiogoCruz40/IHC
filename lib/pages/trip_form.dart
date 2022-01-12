@@ -32,7 +32,7 @@ class _TripFormState extends State<TripForm> {
 
   DateTime? endDate;
   DateTime? startDate;
-  bool _descriptionIsValid = false;
+  bool _descriptionIsValid = true;
 
   TextEditingController countryCtl = TextEditingController();
   TextEditingController locationCtl = TextEditingController();
@@ -269,7 +269,7 @@ class _TripFormEditState extends State<TripFormEdit> {
 
   DateTime? endDate;
   DateTime? startDate;
-  bool _descriptionIsValid = false;
+  bool _descriptionIsValid = true;
 
   @override
   initState() {
