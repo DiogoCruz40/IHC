@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/models.dart';
+import 'pages.dart';
 
 class SearchPage extends StatefulWidget {
   String currentuserId;
