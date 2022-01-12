@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:Passenger/models/models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Passenger/constants/firestore_constants.dart';
@@ -36,29 +34,29 @@ class HomeProvider {
     }
   }
 
-  void getpeersids(
-    String currentuserid,
-  ) {
-    List listids = [];
-    firebaseFirestore
-        .collection(FirestoreConstants.pathMessageCollection)
-        .get()
-        .then((value) => {
-              value.docs.forEach((doc) {
-                print(doc.id);
-              })
-            });
-  }
+  // void getpeersids(
+  //   String currentuserid,
+  // ) {
+  //   List listids = [];
+  //   firebaseFirestore
+  //       .collection(FirestoreConstants.pathMessageCollection)
+  //       .get()
+  //       .then((value) => {
+  //             value.docs.forEach((doc) {
+  //               print(doc.id);
+  //             })
+  //           });
+  // }
 
-  Stream<QuerySnapshot> getStreamUsersFireStore(String pathCollectionMessages,
-      String pathCollectionUsers, String currentuserid, String? textSearch) {
-    if (textSearch != null && textSearch.isNotEmpty == true) {
-      return firebaseFirestore
-          .collection(pathCollectionUsers)
-          .orderBy(FirestoreConstants.nickname)
-          .startAt([textSearch]).endAt([textSearch + '\uf8ff']).snapshots();
-    } else {
-      return firebaseFirestore.collection(pathCollectionUsers).snapshots();
-    }
-  }
+  // Stream<QuerySnapshot> getStreamUsersFireStore(String pathCollectionMessages,
+  //     String pathCollectionUsers, String currentuserid, String? textSearch) {
+  //   if (textSearch != null && textSearch.isNotEmpty == true) {
+  //     return firebaseFirestore
+  //         .collection(pathCollectionUsers)
+  //         .orderBy(FirestoreConstants.nickname)
+  //         .startAt([textSearch]).endAt([textSearch + '\uf8ff']).snapshots();
+  //   } else {
+  //     return firebaseFirestore.collection(pathCollectionUsers).snapshots();
+  //   }
+  // }
 }
