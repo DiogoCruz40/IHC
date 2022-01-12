@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:Passenger/constants/color_constants.dart';
-import 'package:Passenger/providers/auth_provider.dart';
+import 'package:passenger/constants/color_constants.dart';
+import 'package:passenger/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'pages.dart';

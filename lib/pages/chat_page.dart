@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:Passenger/constants/app_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:Passenger/constants/constants.dart';
-import 'package:Passenger/models/models.dart';
-import 'package:Passenger/providers/providers.dart';
+import 'package:passenger/constants/constants.dart';
+import 'package:passenger/models/models.dart';
+import 'package:passenger/providers/providers.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';

@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:Passenger/constants/constants.dart';
+import 'package:passenger/constants/constants.dart';
 
 class Trip {
   String id; // Id da Viagem
@@ -39,7 +39,7 @@ class Trip {
   }
 
   factory Trip.fromDocument(DocumentSnapshot doc) {
-    String id = doc.get(FirestoreConstants.id);
+    String id = doc.id;
     String user = doc.get(FirestoreConstants.user);
     String country = doc.get(FirestoreConstants.country);
     String location = doc.get(FirestoreConstants.location);

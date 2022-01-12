@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:Passenger/constants/constants.dart';
-import 'package:Passenger/models/models.dart';
+import 'package:passenger/constants/constants.dart';
+import 'package:passenger/models/models.dart';
 //import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,7 +36,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> isLoggedIn() async {
-    User? isLoggedIn = await firebaseAuth.currentUser;
+    User? isLoggedIn = firebaseAuth.currentUser;
 
     if (isLoggedIn != null &&
         prefs.getString(FirestoreConstants.id)?.isNotEmpty == true) {
