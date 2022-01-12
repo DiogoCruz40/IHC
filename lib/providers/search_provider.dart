@@ -29,4 +29,8 @@ class SearchProvider {
       return firebaseFirestore.collection(pathCollection).snapshots();
     }
   }
+
+  Stream<DocumentSnapshot> getUserFirestore(String pathCollection, String id) {
+    return firebaseFirestore.collection(pathCollection).doc(id).snapshots();
+  }
 }
