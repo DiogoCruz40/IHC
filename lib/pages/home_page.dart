@@ -319,25 +319,34 @@ class HomePageState extends State<HomePage> {
       children: [
         buildSearchBar(),
         Expanded(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: homeProvider.getStreamFireStore(
-                FirestoreConstants.pathUserCollection, _limit, _textSearch),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasData) {
-                if ((snapshot.data?.docs.length ?? 0) > 0) {
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(10),
-                    itemBuilder: (context, index) =>
-                        buildItem(context, snapshot.data?.docs[index]),
-                    itemCount: snapshot.data?.docs.length,
-                    controller: listScrollController,
-                  );
-                } else {
-                  return const Center(
-                    child: Text("No users"),
-                  );
+          child: FutureBuilder(
+            future: homeProvider.getStreamUsersFireStore(
+                FirestoreConstants.pathMessageCollection,
+                FirestoreConstants.pathUserCollection,
+                currentUserId,
+                _textSearch),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  print(snapshot.data
+                      .map((QuerySnapshot value) => print(value.docs.length)));
+                  // print(snapshot.data());
+                  // if ((snapshot.data?.docs.length ?? 0) > 0) {
+                  //   return ListView.builder(
+                  //     padding: const EdgeInsets.all(10),
+                  //     itemBuilder: (context, index) =>
+                  //         buildItem(context, snapshot.data?.docs[index]),
+                  //     itemCount: snapshot.data?.docs.length,
+                  //     controller: listScrollController,
+                  //   );
+                  // } else {
+                  //   return const Center(
+                  //     child: Text("No users"),
+                  //   );
+                  // }
+                  return Container();
                 }
+                return Container();
               } else {
                 return const Center(
                   child: CircularProgressIndicator(

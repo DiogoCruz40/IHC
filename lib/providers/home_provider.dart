@@ -47,30 +47,44 @@ class HomeProvider {
     }
   }
 
-  void getpeersids(
-    String currentuserid,
-  ) async {
-    List listids = List.empty(growable: true);
-
-    var getids = await firebaseFirestore
+  Future getStreamUsersFireStore(
+      String pathCollectionMessages,
+      String pathCollectionUsers,
+      String currentuserid,
+      String? textSearch) async {
+    var documentreference = await firebaseFirestore
         .collection(FirestoreConstants.pathMessageCollection)
-        .get()
-        .then((values) => values.docs.forEach((value) => print(value.id)));
+        .get();
 
-    //print('passei $listids');
-  }
+    List<String> docsids = List.empty(growable: true);
+    List docsidsto = List.empty(growable: true);
+    documentreference.docs.forEach((doc) => docsids.add(doc.id));
 
-  Stream<QuerySnapshot> getStreamUsersFireStore(String pathCollectionMessages,
-      String pathCollectionUsers, String currentuserid, String? textSearch) {
-    getpeersids(currentuserid);
-
+    for (var i = 0; i < docsids.length; i++) {
+      if (docsids.elementAt(i).contains(currentuserid)) {
+        //print(docsids.elementAt(i));
+        if (docsids.elementAt(i).split("-").first == currentuserid) {
+          docsidsto.add(docsids.elementAt(i).split("-").last.toString());
+        } else {
+          docsidsto.add(docsids.elementAt(i).split("-").first.toString());
+        }
+      }
+    }
+    //print(docsidsto);
     if (textSearch != null && textSearch.isNotEmpty == true) {
-      return firebaseFirestore
+      // return firebaseFirestore
+      //     .collection(pathCollectionUsers)
+      //     .orderBy(FirestoreConstants.nickname)
+      //     .startAt([textSearch]).endAt([textSearch + '\uf8ff']).snapshots();
+      return await firebaseFirestore
           .collection(pathCollectionUsers)
-          .orderBy(FirestoreConstants.nickname)
-          .startAt([textSearch]).endAt([textSearch + '\uf8ff']).snapshots();
+          .where("id", whereIn: docsidsto)
+          .snapshots();
     } else {
-      return firebaseFirestore.collection(pathCollectionUsers).snapshots();
+      return await firebaseFirestore
+          .collection(pathCollectionUsers)
+          .where('id', whereIn: docsidsto)
+          .snapshots();
     }
   }
 }
