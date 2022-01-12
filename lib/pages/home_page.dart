@@ -465,7 +465,7 @@ class HomePageState extends State<HomePage> {
                 });
               },
               decoration: const InputDecoration.collapsed(
-                hintText: 'Search nickname (you have to type exactly string)',
+                hintText: 'Search nickname',
                 hintStyle:
                     TextStyle(fontSize: 13, color: ColorConstants.greyColor),
               ),

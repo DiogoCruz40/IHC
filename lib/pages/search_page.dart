@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/models.dart';
+import 'pages.dart';
 
 class SearchPage extends StatefulWidget {
   String currentuserId;
@@ -200,16 +201,12 @@ class _SearchPageState extends State<SearchPage> {
                           if (Utilities.isKeyboardShowing()) {
                             Utilities.closeKeyboard(context);
                           }
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => ChatPage(
-                          //       peerId: userChat.id,
-                          //       peerAvatar: userChat.photoUrl,
-                          //       peerNickname: userChat.nickname,
-                          //     ),
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    TripDetails(document: document)),
+                          );
                         },
                       ),
                     ],

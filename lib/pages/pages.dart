@@ -6,4 +6,5 @@ export 'settings_page.dart';
 export 'profile_page.dart';
 export 'splash_page.dart';
 export 'search_page.dart';
+export 'trip_details_page.dart';
 export 'trip_form.dart';
