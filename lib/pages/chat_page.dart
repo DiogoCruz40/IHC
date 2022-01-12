@@ -28,23 +28,15 @@ class ChatPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  State createState() => ChatPageState(
-        peerId: peerId,
-        peerAvatar: peerAvatar,
-        peerNickname: peerNickname,
-      );
+  State<ChatPage> createState() => ChatPageState();
 }
 
 class ChatPageState extends State<ChatPage> {
-  ChatPageState(
-      {Key? key,
-      required this.peerId,
-      required this.peerAvatar,
-      required this.peerNickname});
+  ChatPageState({Key? key});
 
-  String peerId;
-  String peerAvatar;
-  String peerNickname;
+  late String peerId;
+  late String peerAvatar;
+  late String peerNickname;
   late String currentUserId;
 
   List<QueryDocumentSnapshot> listMessage = [];
@@ -66,13 +58,15 @@ class ChatPageState extends State<ChatPage> {
 
   @override
   void initState() {
-    super.initState();
+    peerId = widget.peerId;
+    peerAvatar = widget.peerAvatar;
+    peerNickname = widget.peerNickname;
     chatProvider = context.read<ChatProvider>();
     authProvider = context.read<AuthProvider>();
-
     focusNode.addListener(onFocusChange);
     listScrollController.addListener(_scrollListener);
     readLocal();
+    super.initState();
   }
 
   _scrollListener() {
