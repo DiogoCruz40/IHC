@@ -77,6 +77,7 @@ class _TripFormState extends State<TripForm> {
         title: const Text('Create new Trip'),
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
         child: Form(
           key: _formKey,
           child: Container(
@@ -194,21 +195,20 @@ class _TripFormState extends State<TripForm> {
                         _descriptionIsValid = descriptionCtl.text.isNotEmpty;
                       });
 
-                      homeProvider.addDataFirestore(
-                          FirestoreConstants.pathTripCollection, {
-                        FirestoreConstants.user: currentUserId,
-                        FirestoreConstants.country: countryCtl.text,
-                        FirestoreConstants.location: locationCtl.text,
-                        FirestoreConstants.description: descriptionCtl.text,
-                        FirestoreConstants.creationDate: Timestamp.now(),
-                        FirestoreConstants.startDate:
-                            Timestamp.fromDate(startDate!),
-                        FirestoreConstants.endDate:
-                            Timestamp.fromDate(endDate!),
-                      });
-
                       if (_formKey.currentState!.validate() &&
                           _descriptionIsValid) {
+                        homeProvider.addDataFirestore(
+                            FirestoreConstants.pathTripCollection, {
+                          FirestoreConstants.user: currentUserId,
+                          FirestoreConstants.country: countryCtl.text,
+                          FirestoreConstants.location: locationCtl.text,
+                          FirestoreConstants.description: descriptionCtl.text,
+                          FirestoreConstants.creationDate: Timestamp.now(),
+                          FirestoreConstants.startDate:
+                              Timestamp.fromDate(startDate!),
+                          FirestoreConstants.endDate:
+                              Timestamp.fromDate(endDate!),
+                        });
                         showDialog<String>(
                           context: context,
                           builder: (BuildContext context) => AlertDialog(
@@ -267,8 +267,8 @@ class _TripFormEditState extends State<TripFormEdit> {
   TextEditingController endDateCtl = TextEditingController();
   TextEditingController descriptionCtl = TextEditingController();
 
-  DateTime? endDate;
   DateTime? startDate;
+  DateTime? endDate;
   bool _descriptionIsValid = true;
 
   @override
@@ -278,12 +278,12 @@ class _TripFormEditState extends State<TripFormEdit> {
     countryCtl.text = widget.trip.country;
     locationCtl.text = widget.trip.location;
     descriptionCtl.text = widget.trip.description;
-    startDateCtl.text = DateTime.fromMicrosecondsSinceEpoch(
-            widget.trip.startDate.microsecondsSinceEpoch)
-        .toIso8601String();
-    endDateCtl.text = DateTime.fromMicrosecondsSinceEpoch(
-            widget.trip.endDate.microsecondsSinceEpoch)
-        .toIso8601String();
+    startDate = DateTime.fromMicrosecondsSinceEpoch(
+        widget.trip.startDate.microsecondsSinceEpoch);
+    startDateCtl.text = startDate?.toIso8601String() ?? '';
+    endDate = DateTime.fromMicrosecondsSinceEpoch(
+        widget.trip.endDate.microsecondsSinceEpoch);
+    endDateCtl.text = endDate?.toIso8601String() ?? '';
     super.initState();
   }
 
@@ -324,6 +324,7 @@ class _TripFormEditState extends State<TripFormEdit> {
         title: const Text('Edit Trip'),
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
         child: Form(
           key: _formKey,
           child: Container(
@@ -443,6 +444,7 @@ class _TripFormEditState extends State<TripFormEdit> {
 
                       if (_formKey.currentState!.validate() &&
                           _descriptionIsValid) {
+                        print(widget.trip.id);
                         homeProvider.updateDataFirestore(
                             FirestoreConstants.pathTripCollection,
                             widget.trip.id, {
