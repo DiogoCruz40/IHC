@@ -47,7 +47,7 @@ class HomeProvider {
     }
   }
 
-  Future getStreamUsersFireStore(
+  Stream<QuerySnapshot> getStreamUsersFireStore(
       String pathCollectionMessages,
       String pathCollectionUsers,
       String currentuserid,
@@ -76,12 +76,12 @@ class HomeProvider {
       //     .collection(pathCollectionUsers)
       //     .orderBy(FirestoreConstants.nickname)
       //     .startAt([textSearch]).endAt([textSearch + '\uf8ff']).snapshots();
-      return await firebaseFirestore
+      return firebaseFirestore
           .collection(pathCollectionUsers)
           .where("id", whereIn: docsidsto)
           .snapshots();
     } else {
-      return await firebaseFirestore
+      return firebaseFirestore
           .collection(pathCollectionUsers)
           .where('id', whereIn: docsidsto)
           .snapshots();

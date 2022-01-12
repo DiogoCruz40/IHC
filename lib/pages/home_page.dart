@@ -13,7 +13,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 //import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-
+import 'dart:convert';
 import '../models/models.dart';
 import '../widgets/widgets.dart';
 import 'pages.dart';
@@ -319,34 +319,29 @@ class HomePageState extends State<HomePage> {
       children: [
         buildSearchBar(),
         Expanded(
-          child: FutureBuilder(
-            future: homeProvider.getStreamUsersFireStore(
+          child: StreamBuilder(
+            stream: homeProvider.getStreamUsersFireStore(
                 FirestoreConstants.pathMessageCollection,
                 FirestoreConstants.pathUserCollection,
                 currentUserId,
                 _textSearch),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasData) {
-                  print(snapshot.data
-                      .map((QuerySnapshot value) => print(value.docs.length)));
-                  // print(snapshot.data());
-                  // if ((snapshot.data?.docs.length ?? 0) > 0) {
-                  //   return ListView.builder(
-                  //     padding: const EdgeInsets.all(10),
-                  //     itemBuilder: (context, index) =>
-                  //         buildItem(context, snapshot.data?.docs[index]),
-                  //     itemCount: snapshot.data?.docs.length,
-                  //     controller: listScrollController,
-                  //   );
-                  // } else {
-                  //   return const Center(
-                  //     child: Text("No users"),
-                  //   );
-                  // }
-                  return Container();
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasData) {
+                // print(snapshot.data());
+                if ((snapshot.data?.docs.length ?? 0) > 0) {
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(10),
+                    itemBuilder: (context, index) =>
+                        buildItem(context, snapshot.data?.docs[index]),
+                    itemCount: snapshot.data?.docs.length,
+                    controller: listScrollController,
+                  );
+                } else {
+                  return const Center(
+                    child: Text("No users"),
+                  );
                 }
-                return Container();
               } else {
                 return const Center(
                   child: CircularProgressIndicator(
