@@ -334,11 +334,11 @@ class _ChatsListPageState extends State<ChatsListPage> {
                     ),
                   );
                 }
-                return const Center(
-                  child: CircularProgressIndicator(
-                    color: ColorConstants.themeColor,
-                  ),
-                );
+                // return const Center(
+                //   child: CircularProgressIndicator(
+                //     color: ColorConstants.themeColor,
+                //   ),
+                // );
               }),
         ),
       ],

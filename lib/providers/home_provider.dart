@@ -67,12 +67,15 @@ class HomeProvider {
     // }
     //print(docsidsto);
     if (textSearch != null && textSearch.isNotEmpty == true) {
-      // return firebaseFirestore
-      //     .collection(pathCollectionUsers)
-      //     .orderBy(FirestoreConstants.nickname)
-      //     .startAt([textSearch]).endAt([textSearch + '\uf8ff']).snapshots();
       return firebaseFirestore
           .collection(pathCollectionUsers)
+          .where(
+            FirestoreConstants.nickname,
+            isGreaterThanOrEqualTo: textSearch,
+            isLessThan: textSearch.substring(0, textSearch.length - 1) +
+                String.fromCharCode(
+                    textSearch.codeUnitAt(textSearch.length - 1) + 1),
+          )
           .where("id", whereIn: listofids)
           .snapshots();
     } else {
