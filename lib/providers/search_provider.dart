@@ -1,8 +1,7 @@
-import 'package:Passenger/constants/constants.dart';
+import 'package:passenger/constants/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:Passenger/constants/firestore_constants.dart';
-import 'package:flutter/material.dart';
-import 'package:Passenger/utils/utils.dart';
+import 'package:passenger/constants/firestore_constants.dart';
+import 'package:passenger/utils/utils.dart';
 
 class SearchProvider {
   final FirebaseFirestore firebaseFirestore;

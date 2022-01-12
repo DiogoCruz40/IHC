@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:Passenger/constants/constants.dart';
-import 'package:Passenger/providers/providers.dart';
-import 'package:Passenger/utils/utils.dart';
+import 'package:passenger/constants/constants.dart';
+import 'package:passenger/providers/providers.dart';
+import 'package:passenger/utils/utils.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -82,7 +82,7 @@ class HomePageState extends State<HomePage> {
     firebaseMessaging.requestPermission();
 
     await firebaseMessaging.getToken().then((token) {
-      print('push token: $token');
+      //print('push token: $token');
       if (token != null) {
         homeProvider.updateDataFirestore(FirestoreConstants.pathUserCollection,
             currentUserId, {'pushToken': token});
@@ -92,7 +92,7 @@ class HomePageState extends State<HomePage> {
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('onMessage: $message');
+      //print('onMessage: $message');
       if (message.notification != null) {
         showNotification(message.notification!);
       }
@@ -144,7 +144,7 @@ class HomePageState extends State<HomePage> {
         android: androidPlatformChannelSpecifics,
         iOS: iOSPlatformChannelSpecifics);
 
-    print(remoteNotification);
+    //print(remoteNotification);
 
     await flutterLocalNotificationsPlugin.show(
       0,
@@ -374,7 +374,17 @@ class HomePageState extends State<HomePage> {
                             const Spacer(),
                             IconButton(
                               icon: const Icon(Icons.add_circle_outlined),
-                              onPressed: () {},
+                              onPressed: () {
+                                if (Utilities.isKeyboardShowing()) {
+                                  Utilities.closeKeyboard(context);
+                                }
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const TripForm(),
+                                  ),
+                                );
+                              },
                             )
                           ],
                         )),
