@@ -64,7 +64,6 @@ class Trip {
         startDate: startDate,
         endDate: endDate,
         users: users);
-    print(trip);
     return trip;
   }
 }
