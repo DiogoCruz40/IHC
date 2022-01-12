@@ -69,6 +69,7 @@ class HomeProvider {
     if (textSearch != null && textSearch.isNotEmpty == true) {
       return firebaseFirestore
           .collection(pathCollectionUsers)
+          .orderBy(FirestoreConstants.nickname, descending: false)
           .where(
             FirestoreConstants.nickname,
             isGreaterThanOrEqualTo: textSearch,
@@ -81,6 +82,7 @@ class HomeProvider {
     } else {
       return firebaseFirestore
           .collection(pathCollectionUsers)
+          .orderBy(FirestoreConstants.nickname, descending: false)
           .where('id', whereIn: listofids)
           .snapshots();
     }
