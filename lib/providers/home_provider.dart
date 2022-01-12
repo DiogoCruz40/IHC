@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:passenger/constants/firestore_constants.dart';
+import 'package:passenger/models/models.dart';
 
 class HomeProvider {
   final FirebaseFirestore firebaseFirestore;
@@ -15,10 +16,21 @@ class HomeProvider {
   }
 
   Future<void> removeDataFirestore(String collectionPath, String path) {
-    return FirebaseFirestore.instance
-        .collection(collectionPath)
-        .doc(path)
-        .delete();
+    return firebaseFirestore.collection(collectionPath).doc(path).delete();
+  }
+
+  Future<void> addTrip(Trip trip) {
+    return firebaseFirestore
+        .collection(FirestoreConstants.pathTripCollection)
+        .add({
+      FirestoreConstants.user: trip.user,
+      FirestoreConstants.country: trip.country,
+      FirestoreConstants.location: trip.location,
+      FirestoreConstants.description: trip.description,
+      FirestoreConstants.creationDate: trip.creationDate,
+      FirestoreConstants.startDate: trip.startDate,
+      FirestoreConstants.endDate: trip.endDate,
+    });
   }
 
   Stream<QuerySnapshot> getStreamFireStore(

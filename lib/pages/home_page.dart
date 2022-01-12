@@ -363,40 +363,45 @@ class HomePageState extends State<HomePage> {
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasData) {
                 if ((snapshot.data?.docs.length ?? 0) > 0) {
-                  return Column(children: [
-                    Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Row(
-                          children: [
-                            const Text("My Trips",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 18)),
-                            const Spacer(),
-                            IconButton(
-                              icon: const Icon(Icons.add_circle_outlined),
-                              onPressed: () {
-                                if (Utilities.isKeyboardShowing()) {
-                                  Utilities.closeKeyboard(context);
-                                }
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const TripForm(),
-                                  ),
-                                );
-                              },
-                            )
-                          ],
-                        )),
-                    ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
-                      itemBuilder: (context, index) =>
-                          buildTripItem(context, snapshot.data?.docs[index]),
-                      itemCount: snapshot.data?.docs.length,
-                    )
-                  ]);
+                  return SingleChildScrollView(
+                    child: Column(children: [
+                      Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: Row(
+                            children: [
+                              const Text("My Trips",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18)),
+                              const Spacer(),
+                              IconButton(
+                                icon: const Icon(Icons.add_circle_outlined),
+                                onPressed: () {
+                                  if (Utilities.isKeyboardShowing()) {
+                                    Utilities.closeKeyboard(context);
+                                  }
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TripForm(
+                                          passedHomeProvider: homeProvider,
+                                          passedCurrentUserId: currentUserId),
+                                    ),
+                                  );
+                                },
+                              )
+                            ],
+                          )),
+                      ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+                        itemBuilder: (context, index) =>
+                            buildTripItem(context, snapshot.data?.docs[index]),
+                        itemCount: snapshot.data?.docs.length,
+                      )
+                    ]),
+                  );
                 } else {
                   return Column(children: [
                     Padding(

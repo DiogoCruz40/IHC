@@ -39,7 +39,7 @@ class Trip {
   }
 
   factory Trip.fromDocument(DocumentSnapshot doc) {
-    String id = doc.get(FirestoreConstants.id);
+    String id = doc.id;
     String user = doc.get(FirestoreConstants.user);
     String country = doc.get(FirestoreConstants.country);
     String location = doc.get(FirestoreConstants.location);
