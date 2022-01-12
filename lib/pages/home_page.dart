@@ -678,7 +678,20 @@ class HomePageState extends State<HomePage> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit),
-                          onPressed: () {},
+                          onPressed: () {
+                            if (Utilities.isKeyboardShowing()) {
+                              Utilities.closeKeyboard(context);
+                            }
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TripFormEdit(
+                                    passedHomeProvider: homeProvider,
+                                    passedCurrentUserId: currentUserId,
+                                    trip: trip),
+                              ),
+                            );
+                          },
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),

@@ -8,7 +8,7 @@ class HomeProvider {
   HomeProvider({required this.firebaseFirestore});
 
   Future<void> updateDataFirestore(
-      String collectionPath, String path, Map<String, String> dataNeedUpdate) {
+      String collectionPath, String path, Map<String, Object> dataNeedUpdate) {
     return firebaseFirestore
         .collection(collectionPath)
         .doc(path)
@@ -19,6 +19,17 @@ class HomeProvider {
     return firebaseFirestore.collection(collectionPath).doc(path).delete();
   }
 
+  Future<void> addDataFirestore(
+      String collectionPath, Map<String, Object> newData) {
+    return firebaseFirestore.collection(collectionPath).add(newData);
+  }
+
+  Future<void> addDataByIdFirestore(
+      String collectionPath, String path, Map<String, String> newData) {
+    return firebaseFirestore.collection(collectionPath).doc(path).set(newData);
+  }
+
+  //TODO remove addTrip, it will be replaced by addDataFirestore
   Future<void> addTrip(Trip trip) {
     return firebaseFirestore
         .collection(FirestoreConstants.pathTripCollection)
@@ -28,6 +39,20 @@ class HomeProvider {
       FirestoreConstants.location: trip.location,
       FirestoreConstants.description: trip.description,
       FirestoreConstants.creationDate: trip.creationDate,
+      FirestoreConstants.startDate: trip.startDate,
+      FirestoreConstants.endDate: trip.endDate,
+    });
+  }
+
+  //TODO remove updateTrip, it will be replaced by updateDataFirestore
+  Future<void> updateTrip(Trip trip) {
+    return firebaseFirestore
+        .collection(FirestoreConstants.pathTripCollection)
+        .doc(trip.id)
+        .update({
+      FirestoreConstants.country: trip.country,
+      FirestoreConstants.location: trip.location,
+      FirestoreConstants.description: trip.description,
       FirestoreConstants.startDate: trip.startDate,
       FirestoreConstants.endDate: trip.endDate,
     });
