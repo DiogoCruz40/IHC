@@ -109,7 +109,7 @@ class _TripFormState extends State<TripForm> {
                     controller: locationCtl,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Location',
+                      labelText: 'Location *',
                     ),
                   ),
                 ),
@@ -356,7 +356,7 @@ class _TripFormEditState extends State<TripFormEdit> {
                     controller: locationCtl,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Location',
+                      labelText: 'Location *',
                     ),
                   ),
                 ),
