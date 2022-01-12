@@ -29,9 +29,9 @@ class ChatPage extends StatefulWidget {
 
   @override
   State createState() => ChatPageState(
-        peerId: this.peerId,
-        peerAvatar: this.peerAvatar,
-        peerNickname: this.peerNickname,
+        peerId: peerId,
+        peerAvatar: peerAvatar,
+        peerNickname: peerNickname,
       );
 }
 
@@ -545,7 +545,7 @@ class ChatPageState extends State<ChatPage> {
             ),
             Expanded(
               child: Text(
-                this.peerNickname,
+                peerNickname,
                 style: const TextStyle(
                     fontSize: 22.0,
                     fontFamily: AppConstants.fontfamily,

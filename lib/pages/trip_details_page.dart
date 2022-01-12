@@ -1,11 +1,5 @@
-import 'dart:async';
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -13,35 +7,28 @@ import 'package:passenger/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 import 'package:passenger/constants/constants.dart';
-import 'package:passenger/pages/profile_page.dart';
 import 'package:passenger/providers/providers.dart';
-import 'package:passenger/utils/utils.dart';
 
 import '../models/models.dart';
-import '../widgets/widgets.dart';
 import 'pages.dart';
 
 class TripDetails extends StatefulWidget {
-  DocumentSnapshot? document;
+  final DocumentSnapshot? document;
 
-  TripDetails({Key? key, this.document}) : super(key: key);
+  const TripDetails({Key? key, this.document}) : super(key: key);
 
   @override
-  _TripDetailsState createState() => _TripDetailsState(document: this.document);
+  _TripDetailsState createState() => _TripDetailsState();
 }
 
 class _TripDetailsState extends State<TripDetails> {
   final ScrollController listScrollController = ScrollController();
-  int _limit = 20;
-  final int _limitIncrement = 20;
 
   bool isLoading = false;
 
   late SearchProvider searchProvider;
   Debouncer searchDebouncer = Debouncer(milliseconds: 300);
   late DocumentSnapshot? document;
-
-  _TripDetailsState({this.document});
 
   @override
   void initState() {
@@ -50,15 +37,15 @@ class _TripDetailsState extends State<TripDetails> {
     searchProvider = context.read<SearchProvider>();
 
     listScrollController.addListener(scrollListener);
+
+    document = widget.document;
   }
 
   void scrollListener() {
     if (listScrollController.offset >=
             listScrollController.position.maxScrollExtent &&
         !listScrollController.position.outOfRange) {
-      setState(() {
-        _limit += _limitIncrement;
-      });
+      setState(() {});
     }
   }
 
@@ -71,7 +58,7 @@ class _TripDetailsState extends State<TripDetails> {
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            'Viagem a ${trip.location}',
+            'Trip to ${trip.location}',
             overflow: TextOverflow.fade,
           ),
         ),
@@ -122,7 +109,7 @@ class _TripDetailsState extends State<TripDetails> {
                         child: RichText(
                             textAlign: TextAlign.center,
                             text: TextSpan(
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 14.0,
                                   color: Colors.black,
                                 ),
@@ -132,22 +119,22 @@ class _TripDetailsState extends State<TripDetails> {
                                   //     style: TextStyle(
                                   //         fontFamily: AppConstants.fontfamily)),
                                   TextSpan(
-                                      text:
-                                          '${DateFormat.yMd(locale).format(trip.startDate.toDate())} '),
-                                  TextSpan(
-                                    text: 'a ',
+                                      text: DateFormat.yMd(locale)
+                                          .format(trip.startDate.toDate())),
+                                  const TextSpan(
+                                    text: ' to ',
                                     style: TextStyle(
                                         fontFamily: AppConstants.fontfamily),
                                   ),
                                   TextSpan(
-                                    text:
-                                        '${DateFormat.yMd(locale).format(trip.endDate.toDate())}',
+                                    text: DateFormat.yMd(locale)
+                                        .format(trip.endDate.toDate()),
                                   ),
                                 ])),
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Row(
@@ -156,13 +143,13 @@ class _TripDetailsState extends State<TripDetails> {
                       Expanded(
                         child: RichText(
                             text: TextSpan(
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 14.0,
                                   color: Colors.black,
                                 ),
                                 children: [
-                              TextSpan(
-                                  text: 'Destino: ',
+                              const TextSpan(
+                                  text: 'Destination: ',
                                   style: TextStyle(
                                       fontFamily: AppConstants.fontfamily)),
                               TextSpan(
@@ -177,21 +164,21 @@ class _TripDetailsState extends State<TripDetails> {
                       Expanded(
                         child: RichText(
                             text: TextSpan(
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 14.0,
                                   color: Colors.black,
                                 ),
                                 children: [
-                              TextSpan(
-                                  text: 'Descrição: ',
+                              const TextSpan(
+                                  text: 'Description: ',
                                   style: TextStyle(
                                       fontFamily: AppConstants.fontfamily)),
-                              TextSpan(text: '${trip.description}'),
+                              TextSpan(text: trip.description),
                             ])),
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   StreamBuilder(
@@ -216,8 +203,9 @@ class _TripDetailsState extends State<TripDetails> {
                                               Widget child,
                                               ImageChunkEvent?
                                                   loadingProgress) {
-                                            if (loadingProgress == null)
+                                            if (loadingProgress == null) {
                                               return child;
+                                            }
                                             return SizedBox(
                                               width: 50,
                                               height: 50,

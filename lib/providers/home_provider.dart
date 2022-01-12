@@ -1,7 +1,5 @@
-import 'package:passenger/models/models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:passenger/constants/firestore_constants.dart';
-import 'package:passenger/models/models.dart';
 import 'dart:async';
 
 class HomeProvider {
@@ -29,35 +27,6 @@ class HomeProvider {
   Future<void> addDataByIdFirestore(
       String collectionPath, String path, Map<String, String> newData) {
     return firebaseFirestore.collection(collectionPath).doc(path).set(newData);
-  }
-
-  //TODO remove addTrip, it will be replaced by addDataFirestore
-  Future<void> addTrip(Trip trip) {
-    return firebaseFirestore
-        .collection(FirestoreConstants.pathTripCollection)
-        .add({
-      FirestoreConstants.user: trip.user,
-      FirestoreConstants.country: trip.country,
-      FirestoreConstants.location: trip.location,
-      FirestoreConstants.description: trip.description,
-      FirestoreConstants.creationDate: trip.creationDate,
-      FirestoreConstants.startDate: trip.startDate,
-      FirestoreConstants.endDate: trip.endDate,
-    });
-  }
-
-  //TODO remove updateTrip, it will be replaced by updateDataFirestore
-  Future<void> updateTrip(Trip trip) {
-    return firebaseFirestore
-        .collection(FirestoreConstants.pathTripCollection)
-        .doc(trip.id)
-        .update({
-      FirestoreConstants.country: trip.country,
-      FirestoreConstants.location: trip.location,
-      FirestoreConstants.description: trip.description,
-      FirestoreConstants.startDate: trip.startDate,
-      FirestoreConstants.endDate: trip.endDate,
-    });
   }
 
   Stream<QuerySnapshot> getStreamFireStore(

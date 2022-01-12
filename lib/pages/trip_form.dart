@@ -80,159 +80,156 @@ class _TripFormState extends State<TripForm> {
         padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
         child: Form(
           key: _formKey,
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  child: TextFormField(
-                    validator: (country) {
-                      if (country == null || country.isEmpty) {
-                        return 'Please enter the country';
-                      }
-                      return null;
-                    },
-                    controller: countryCtl,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(), labelText: 'Country *'),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(14),
+                child: TextFormField(
+                  validator: (country) {
+                    if (country == null || country.isEmpty) {
+                      return 'Please enter the country';
+                    }
+                    return null;
+                  },
+                  controller: countryCtl,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(), labelText: 'Country *'),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(14),
+                child: TextFormField(
+                  validator: (location) {
+                    if (location == null || location.isEmpty) {
+                      return 'Please enter the location';
+                    }
+                    return null;
+                  },
+                  controller: locationCtl,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Location *',
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  child: TextFormField(
-                    validator: (location) {
-                      if (location == null || location.isEmpty) {
-                        return 'Please enter the location';
-                      }
-                      return null;
-                    },
-                    controller: locationCtl,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Location *',
-                    ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(14),
+                child: TextFormField(
+                  validator: (startDate) {
+                    if (startDate == null || startDate.isEmpty) {
+                      return 'Please enter the start date';
+                    }
+                    return null;
+                  },
+                  controller: startDateCtl,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Start Date *',
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  child: TextFormField(
-                    validator: (startDate) {
-                      if (startDate == null || startDate.isEmpty) {
-                        return 'Please enter the start date';
-                      }
-                      return null;
-                    },
-                    controller: startDateCtl,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Start Date *',
-                    ),
-                    onTap: () {
-                      // Below line stops keyboard from appearing
-                      FocusScope.of(context).requestFocus(FocusNode());
+                  onTap: () {
+                    // Below line stops keyboard from appearing
+                    FocusScope.of(context).requestFocus(FocusNode());
 
-                      // Show Date Picker Here
-                      _selectStartDate();
-                    },
-                  ),
+                    // Show Date Picker Here
+                    _selectStartDate();
+                  },
                 ),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  child: TextFormField(
-                    validator: (endDate) {
-                      if (endDate == null || endDate.isEmpty) {
-                        return 'Please enter the end date';
-                      }
-                      return null;
-                    },
-                    controller: endDateCtl,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'End Date *',
-                    ),
-                    onTap: () {
-                      // Stops keyboard from appearing
-                      FocusScope.of(context).requestFocus(FocusNode());
+              ),
+              Container(
+                padding: const EdgeInsets.all(14),
+                child: TextFormField(
+                  validator: (endDate) {
+                    if (endDate == null || endDate.isEmpty) {
+                      return 'Please enter the end date';
+                    }
+                    return null;
+                  },
+                  controller: endDateCtl,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'End Date *',
+                  ),
+                  onTap: () {
+                    // Stops keyboard from appearing
+                    FocusScope.of(context).requestFocus(FocusNode());
 
-                      // Show DatePicker
-                      _selectEndDate();
-                    },
+                    // Show DatePicker
+                    _selectEndDate();
+                  },
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(14),
+                child: TextField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  controller: descriptionCtl,
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: 'Description *',
+                    errorText: _descriptionIsValid
+                        ? null
+                        : 'Please enter the description',
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  child: TextField(
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    controller: descriptionCtl,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: 'Description *',
-                      errorText: _descriptionIsValid
-                          ? null
-                          : 'Please enter the description',
-                    ),
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    primary: Colors.white,
+                    backgroundColor: Colors.blue,
+                    elevation: 5,
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      primary: Colors.white,
-                      backgroundColor: Colors.blue,
-                      elevation: 5,
-                    ),
-                    child: const Text(
-                      'Create Trip',
-                      style: TextStyle(
-                          color: Colors.white, fontFamily: 'SansBold'),
-                    ),
-                    onPressed: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
+                  child: const Text(
+                    'Create Trip',
+                    style:
+                        TextStyle(color: Colors.white, fontFamily: 'SansBold'),
+                  ),
+                  onPressed: () {
+                    FocusScope.of(context).requestFocus(FocusNode());
 
-                      setState(() {
-                        _descriptionIsValid = descriptionCtl.text.isNotEmpty;
+                    setState(() {
+                      _descriptionIsValid = descriptionCtl.text.isNotEmpty;
+                    });
+
+                    if (_formKey.currentState!.validate() &&
+                        _descriptionIsValid) {
+                      homeProvider.addDataFirestore(
+                          FirestoreConstants.pathTripCollection, {
+                        FirestoreConstants.user: currentUserId,
+                        FirestoreConstants.country: countryCtl.text,
+                        FirestoreConstants.location: locationCtl.text,
+                        FirestoreConstants.description: descriptionCtl.text,
+                        FirestoreConstants.creationDate: Timestamp.now(),
+                        FirestoreConstants.startDate:
+                            Timestamp.fromDate(startDate!),
+                        FirestoreConstants.endDate:
+                            Timestamp.fromDate(endDate!),
                       });
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Create Trip'),
+                          content: Text(
+                              "Trip '${countryCtl.text}, ${locationCtl.text}' was created successfully"),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context, 'Ok');
+                              },
+                              child: const Text('Ok'),
+                            ),
+                          ],
+                        ),
+                      );
 
-                      if (_formKey.currentState!.validate() &&
-                          _descriptionIsValid) {
-                        homeProvider.addDataFirestore(
-                            FirestoreConstants.pathTripCollection, {
-                          FirestoreConstants.user: currentUserId,
-                          FirestoreConstants.country: countryCtl.text,
-                          FirestoreConstants.location: locationCtl.text,
-                          FirestoreConstants.description: descriptionCtl.text,
-                          FirestoreConstants.creationDate: Timestamp.now(),
-                          FirestoreConstants.startDate:
-                              Timestamp.fromDate(startDate!),
-                          FirestoreConstants.endDate:
-                              Timestamp.fromDate(endDate!),
-                        });
-                        showDialog<String>(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: const Text('Create Trip'),
-                            content: Text(
-                                'Trip "${countryCtl.text}, ${locationCtl.text}" was created successfully'),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context, 'Ok');
-                                },
-                                child: const Text('Ok'),
-                              ),
-                            ],
-                          ),
-                        );
-
-                        Navigator.pop(context);
-                      }
-                    },
-                  ),
+                      Navigator.pop(context);
+                    }
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -327,162 +324,158 @@ class _TripFormEditState extends State<TripFormEdit> {
         padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
         child: Form(
           key: _formKey,
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  child: TextFormField(
-                    validator: (country) {
-                      if (country == null || country.isEmpty) {
-                        return 'Please enter the country';
-                      }
-                      return null;
-                    },
-                    controller: countryCtl,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(), labelText: 'Country *'),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(14),
+                child: TextFormField(
+                  validator: (country) {
+                    if (country == null || country.isEmpty) {
+                      return 'Please enter the country';
+                    }
+                    return null;
+                  },
+                  controller: countryCtl,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(), labelText: 'Country *'),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(14),
+                child: TextFormField(
+                  validator: (location) {
+                    if (location == null || location.isEmpty) {
+                      return 'Please enter the location';
+                    }
+                    return null;
+                  },
+                  controller: locationCtl,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Location *',
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  child: TextFormField(
-                    validator: (location) {
-                      if (location == null || location.isEmpty) {
-                        return 'Please enter the location';
-                      }
-                      return null;
-                    },
-                    controller: locationCtl,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Location *',
-                    ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(14),
+                child: TextFormField(
+                  validator: (startDate) {
+                    if (startDate == null || startDate.isEmpty) {
+                      return 'Please enter the start date';
+                    }
+                    return null;
+                  },
+                  controller: startDateCtl,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Start Date *',
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  child: TextFormField(
-                    validator: (startDate) {
-                      if (startDate == null || startDate.isEmpty) {
-                        return 'Please enter the start date';
-                      }
-                      return null;
-                    },
-                    controller: startDateCtl,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Start Date *',
-                    ),
-                    onTap: () {
-                      // Below line stops keyboard from appearing
-                      FocusScope.of(context).requestFocus(FocusNode());
+                  onTap: () {
+                    // Below line stops keyboard from appearing
+                    FocusScope.of(context).requestFocus(FocusNode());
 
-                      // Show Date Picker Here
-                      _selectStartDate();
-                    },
-                  ),
+                    // Show Date Picker Here
+                    _selectStartDate();
+                  },
                 ),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  child: TextFormField(
-                    validator: (endDate) {
-                      if (endDate == null || endDate.isEmpty) {
-                        return 'Please enter the end date';
-                      }
-                      return null;
-                    },
-                    controller: endDateCtl,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'End Date *',
-                    ),
-                    onTap: () {
-                      // Below line stops keyboard from appearing
-                      FocusScope.of(context).requestFocus(FocusNode());
+              ),
+              Container(
+                padding: const EdgeInsets.all(14),
+                child: TextFormField(
+                  validator: (endDate) {
+                    if (endDate == null || endDate.isEmpty) {
+                      return 'Please enter the end date';
+                    }
+                    return null;
+                  },
+                  controller: endDateCtl,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'End Date *',
+                  ),
+                  onTap: () {
+                    // Below line stops keyboard from appearing
+                    FocusScope.of(context).requestFocus(FocusNode());
 
-                      // Show Date Picker Here
-                      _selectEndDate();
-                    },
+                    // Show Date Picker Here
+                    _selectEndDate();
+                  },
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(14),
+                child: TextField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  controller: descriptionCtl,
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: 'Description *',
+                    errorText: _descriptionIsValid
+                        ? null
+                        : 'Please enter the description',
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  child: TextField(
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    controller: descriptionCtl,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: 'Description *',
-                      errorText: _descriptionIsValid
-                          ? null
-                          : 'Please enter the description',
-                    ),
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    primary: Colors.white,
+                    backgroundColor: Colors.blue,
+                    elevation: 5,
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      primary: Colors.white,
-                      backgroundColor: Colors.blue,
-                      elevation: 5,
-                    ),
-                    child: const Text(
-                      'Edit Trip',
-                      style: TextStyle(
-                          color: Colors.white, fontFamily: 'SansBold'),
-                    ),
-                    onPressed: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
+                  child: const Text(
+                    'Edit Trip',
+                    style:
+                        TextStyle(color: Colors.white, fontFamily: 'SansBold'),
+                  ),
+                  onPressed: () {
+                    FocusScope.of(context).requestFocus(FocusNode());
 
-                      setState(() {
-                        _descriptionIsValid = descriptionCtl.text.isNotEmpty;
+                    setState(() {
+                      _descriptionIsValid = descriptionCtl.text.isNotEmpty;
+                    });
+
+                    if (_formKey.currentState!.validate() &&
+                        _descriptionIsValid) {
+                      homeProvider.updateDataFirestore(
+                          FirestoreConstants.pathTripCollection,
+                          widget.trip.id, {
+                        FirestoreConstants.user: currentUserId,
+                        FirestoreConstants.country: countryCtl.text,
+                        FirestoreConstants.location: locationCtl.text,
+                        FirestoreConstants.description: descriptionCtl.text,
+                        FirestoreConstants.creationDate: Timestamp.now(),
+                        FirestoreConstants.startDate:
+                            Timestamp.fromDate(startDate!),
+                        FirestoreConstants.endDate:
+                            Timestamp.fromDate(endDate!),
                       });
 
-                      if (_formKey.currentState!.validate() &&
-                          _descriptionIsValid) {
-                        print(widget.trip.id);
-                        homeProvider.updateDataFirestore(
-                            FirestoreConstants.pathTripCollection,
-                            widget.trip.id, {
-                          FirestoreConstants.user: currentUserId,
-                          FirestoreConstants.country: countryCtl.text,
-                          FirestoreConstants.location: locationCtl.text,
-                          FirestoreConstants.description: descriptionCtl.text,
-                          FirestoreConstants.creationDate: Timestamp.now(),
-                          FirestoreConstants.startDate:
-                              Timestamp.fromDate(startDate!),
-                          FirestoreConstants.endDate:
-                              Timestamp.fromDate(endDate!),
-                        });
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Edit Trip'),
+                          content: Text(
+                              "Trip '${countryCtl.text}, ${locationCtl.text}' was edited successfully"),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context, 'Ok');
+                              },
+                              child: const Text('Ok'),
+                            ),
+                          ],
+                        ),
+                      );
 
-                        showDialog<String>(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: const Text('Edit Trip'),
-                            content: Text(
-                                'Trip "${countryCtl.text}, ${locationCtl.text}" was edited successfully'),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context, 'Ok');
-                                },
-                                child: const Text('Ok'),
-                              ),
-                            ],
-                          ),
-                        );
-
-                        Navigator.pop(context);
-                      }
-                    },
-                  ),
+                      Navigator.pop(context);
+                    }
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
