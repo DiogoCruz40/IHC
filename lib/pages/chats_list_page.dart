@@ -35,7 +35,7 @@ class _ChatsListPageState extends State<ChatsListPage> {
 
   late HomeProvider homeProvider;
   Debouncer searchDebouncer = Debouncer(milliseconds: 300);
-  late Stream<QuerySnapshot> _userstream;
+
   final StreamController<bool> btnClearController =
       StreamController<bool>.broadcast();
   TextEditingController searchBarTec = TextEditingController();
@@ -48,7 +48,6 @@ class _ChatsListPageState extends State<ChatsListPage> {
   void dispose() {
     super.dispose();
     btnClearController.close();
-    _userstream.drain();
   }
 
   @override
@@ -56,11 +55,6 @@ class _ChatsListPageState extends State<ChatsListPage> {
     super.initState();
 
     homeProvider = context.read<HomeProvider>();
-
-    _userstream = homeProvider
-        .getStreamUsersFireStore(FirestoreConstants.pathMessageCollection,
-            FirestoreConstants.pathUserCollection, currentuserId, _textSearch)
-        .asBroadcastStream();
   }
 
   void scrollListener() {
@@ -259,33 +253,93 @@ class _ChatsListPageState extends State<ChatsListPage> {
         buildSearchBar(),
         Expanded(
           child: StreamBuilder(
-            stream: _userstream,
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasData) {
-                // print(snapshot.data());
-                if ((snapshot.data?.docs.length ?? 0) > 0) {
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(10),
-                    itemBuilder: (context, index) =>
-                        buildItem(context, snapshot.data?.docs[index]),
-                    itemCount: snapshot.data?.docs.length,
-                    controller: listScrollController,
-                  );
+              stream: homeProvider.getStreamMessagesFireStore(
+                  FirestoreConstants.pathMessageCollection),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  if ((snapshot.data?.docs.length ?? 0) > 0) {
+                    List peersmessages = List.empty(growable: true);
+                    List idslist = List.empty(growable: true);
+                    if (idslist.isNotEmpty || peersmessages.isNotEmpty) {
+                      idslist.clear();
+                      peersmessages.clear();
+                    }
+                    snapshot.data?.docs
+                        .forEach((doc) => peersmessages.add(doc.id));
+
+                    for (var i = 0; i < peersmessages.length; i++) {
+                      if (peersmessages.elementAt(i).contains(currentuserId)) {
+                        //print(docsids.elementAt(i));
+                        if (peersmessages.elementAt(i).split("-").first ==
+                            currentuserId) {
+                          idslist.add(peersmessages
+                              .elementAt(i)
+                              .split("-")
+                              .last
+                              .toString());
+                        } else {
+                          idslist.add(peersmessages
+                              .elementAt(i)
+                              .split("-")
+                              .first
+                              .toString());
+                        }
+                      }
+                    }
+
+                    return StreamBuilder(
+                        stream: homeProvider.getStreamUsersFireStore(
+                            idslist,
+                            FirestoreConstants.pathUserCollection,
+                            currentuserId,
+                            _textSearch),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (idslist.isNotEmpty || peersmessages.isNotEmpty) {
+                            idslist.clear();
+                            peersmessages.clear();
+                          }
+                          if (snapshot.hasData) {
+                            if ((snapshot.data?.docs.length ?? 0) > 0) {
+                              return ListView.builder(
+                                padding: const EdgeInsets.all(10),
+                                itemBuilder: (context, index) => buildItem(
+                                    context, snapshot.data?.docs[index]),
+                                itemCount: snapshot.data?.docs.length,
+                                controller: listScrollController,
+                              );
+                            } else {
+                              return const Center(
+                                child: Text("No users"),
+                              );
+                            }
+                          } else {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: ColorConstants.themeColor,
+                              ),
+                            );
+                          }
+                        });
+                  } else {
+                    return const Center(
+                      child: Text("No users"),
+                    );
+                  }
                 } else {
                   return const Center(
-                    child: Text("No users"),
+                    child: CircularProgressIndicator(
+                      color: ColorConstants.themeColor,
+                    ),
                   );
                 }
-              } else {
                 return const Center(
                   child: CircularProgressIndicator(
                     color: ColorConstants.themeColor,
                   ),
                 );
-              }
-            },
-          ),
+              }),
         ),
       ],
     );
