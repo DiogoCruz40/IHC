@@ -32,7 +32,7 @@ class _ViewTripState extends State<ViewTrip> {
   Debouncer searchDebouncer = Debouncer(milliseconds: 300);
   late DocumentSnapshot? document;
   late HomeProvider homeProvider;
-  late List<String> allusersids;
+  late List<String> allusersids = List.empty(growable: true);
 
   final StreamController<bool> btnClearController =
       StreamController<bool>.broadcast();
@@ -327,7 +327,7 @@ class _ViewTripState extends State<ViewTrip> {
                     ],
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 10,
                   ),
                   Container(
                     alignment: Alignment.centerLeft,
@@ -339,74 +339,73 @@ class _ViewTripState extends State<ViewTrip> {
                 ],
               ),
             ),
-            StreamBuilder(
-                stream: homeProvider.getStreamTripsFirestore(
-                    FirestoreConstants.pathTripCollection,
-                    FirestoreConstants.pathUserCollection,
-                    trip.id),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    if ((snapshot.data?.docs.length ?? 0) > 0) {
-                      // if (idslist.isNotEmpty || peersmessages.isNotEmpty) {
-                      //   idslist.clear();
-                      //   peersmessages.clear();
-                      // }
+            Expanded(
+              child: StreamBuilder(
+                  stream: searchProvider.getFavourites(trip.id),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasData) {
+                      if ((snapshot.data?.docs.length ?? 0) > 0) {
+                        // if (idslist.isNotEmpty || peersmessages.isNotEmpty) {
+                        //   idslist.clear();
+                        //   peersmessages.clear();
+                        // }
+                        allusersids.clear();
+                        snapshot.data?.docs
+                            .forEach((doc) => allusersids.add(doc.id));
 
-                      snapshot.data?.docs
-                          .forEach((doc) => allusersids.add(doc.id));
-
-                      return StreamBuilder(
-                          stream: homeProvider.getStreamUsersFireStore(
-                              allusersids,
-                              FirestoreConstants.pathUserCollection,
-                              ''),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<QuerySnapshot> snapshot) {
-                            // if (idslist.isNotEmpty || peersmessages.isNotEmpty) {
-                            //   idslist.clear();
-                            //   peersmessages.clear();
-                            // }
-                            if (snapshot.hasData) {
-                              if ((snapshot.data?.docs.length ?? 0) > 0) {
-                                return ListView.builder(
-                                  padding: const EdgeInsets.all(10),
-                                  itemBuilder: (context, index) => buildItem(
-                                      context, snapshot.data?.docs[index]),
-                                  itemCount: snapshot.data?.docs.length,
-                                  controller: listScrollController,
-                                );
+                        return StreamBuilder(
+                            stream: homeProvider.getStreamUsersFireStore(
+                                allusersids,
+                                FirestoreConstants.pathUserCollection,
+                                ''),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              // if (idslist.isNotEmpty || peersmessages.isNotEmpty) {
+                              //   idslist.clear();
+                              //   peersmessages.clear();
+                              // }
+                              if (snapshot.hasData) {
+                                if ((snapshot.data?.docs.length ?? 0) > 0) {
+                                  return ListView.builder(
+                                    padding: const EdgeInsets.all(10),
+                                    itemBuilder: (context, index) => buildItem(
+                                        context, snapshot.data?.docs[index]),
+                                    itemCount: snapshot.data?.docs.length,
+                                    controller: listScrollController,
+                                  );
+                                } else {
+                                  return const Center(
+                                    child: Text("No users"),
+                                  );
+                                }
                               } else {
                                 return const Center(
-                                  child: Text("No users"),
+                                  child: CircularProgressIndicator(
+                                    color: ColorConstants.themeColor,
+                                  ),
                                 );
                               }
-                            } else {
-                              return const Center(
-                                child: CircularProgressIndicator(
-                                  color: ColorConstants.themeColor,
-                                ),
-                              );
-                            }
-                          });
+                            });
+                      } else {
+                        return const Center(
+                          child: Text("No users"),
+                        );
+                      }
                     } else {
                       return const Center(
-                        child: Text("No users"),
+                        child: CircularProgressIndicator(
+                          color: ColorConstants.themeColor,
+                        ),
                       );
                     }
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: ColorConstants.themeColor,
-                      ),
-                    );
-                  }
-                  // return const Center(
-                  //   child: CircularProgressIndicator(
-                  //     color: ColorConstants.themeColor,
-                  //   ),
-                  // );
-                }),
+                    // return const Center(
+                    //   child: CircularProgressIndicator(
+                    //     color: ColorConstants.themeColor,
+                    //   ),
+                    // );
+                  }),
+            ),
           ],
         ),
       );

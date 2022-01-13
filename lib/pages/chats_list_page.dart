@@ -32,8 +32,8 @@ class _ChatsListPageState extends State<ChatsListPage> {
   final int _limitIncrement = 20;
   String _textSearch = "";
   bool isLoading = false;
-  late List peersmessages;
-  late List idslist;
+  late List peersmessages = List.empty(growable: true);
+  late List idslist = List.empty(growable: true);
   late HomeProvider homeProvider;
   Debouncer searchDebouncer = Debouncer(milliseconds: 300);
 
