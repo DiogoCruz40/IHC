@@ -32,14 +32,12 @@ class _SearchPageState extends State<SearchPage> {
   final StreamController<bool> btnClearController =
       StreamController<bool>.broadcast();
   TextEditingController searchBarTec = TextEditingController();
-  late String _teste;
 
   @override
   void initState() {
     currentuserId = widget.currentuserId;
     searchProvider = context.read<SearchProvider>();
     listScrollController.addListener(scrollListener);
-    _teste = "init";
     super.initState();
   }
 
