@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -66,36 +67,57 @@ class _TripDetailsState extends State<TripDetails> {
           children: [
             Container(
               alignment: Alignment.center,
-              child: Image.network(
-                'photoUrl',
-                fit: BoxFit.cover,
-                width: 90,
-                height: 90,
-                errorBuilder: (context, object, stackTrace) {
-                  return const Icon(
-                    Icons.image,
-                    size: 100,
-                    color: ColorConstants.greyColor,
-                  );
+              child: CupertinoButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              FullPhotoPage(url: trip.photoUrl)));
                 },
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return SizedBox(
-                    width: 90,
-                    height: 90,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: ColorConstants.themeColor,
-                        value: loadingProgress.expectedTotalBytes != null &&
-                                loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    ),
-                  );
-                },
+                child: Container(
+                    margin: const EdgeInsets.all(10),
+                    child: trip.photoUrl.isNotEmpty
+                        ? Image.network(
+                            trip.photoUrl,
+                            fit: BoxFit.cover,
+                            width: 200,
+                            height: 200,
+                            errorBuilder: (context, object, stackTrace) {
+                              return const Icon(
+                                Icons.image,
+                                size: 100,
+                                color: ColorConstants.greyColor,
+                              );
+                            },
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return SizedBox(
+                                width: 90,
+                                height: 90,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    color: ColorConstants.themeColor,
+                                    value: loadingProgress.expectedTotalBytes !=
+                                                null &&
+                                            loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : const Icon(
+                            Icons.image,
+                            size: 100,
+                            color: ColorConstants.greyColor,
+                          )),
               ),
             ),
             Padding(

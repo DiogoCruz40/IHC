@@ -36,4 +36,12 @@ class SettingProvider {
         .doc(path)
         .update(dataNeedUpdate);
   }
+
+  Future<void> updatephototripFireStore(
+      String collectionPath, String path, urlNeedUpdate) {
+    return firebaseFirestore
+        .collection(collectionPath)
+        .doc(path)
+        .update({"photoUrl": urlNeedUpdate});
+  }
 }

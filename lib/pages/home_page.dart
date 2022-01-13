@@ -586,6 +586,7 @@ class HomePageState extends State<HomePage> {
                                 builder: (context) => TripFormEdit(
                                     passedHomeProvider: homeProvider,
                                     passedCurrentUserId: currentUserId,
+                                    photoUrl: trip.photoUrl,
                                     trip: trip),
                               ),
                             );

@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:passenger/constants/constants.dart';
 import 'package:passenger/providers/providers.dart';
 import 'package:passenger/utils/utils.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/src/provider.dart';
 
 import '../models/models.dart';
 import 'pages.dart';
@@ -26,20 +26,19 @@ class _SearchPageState extends State<SearchPage> {
   final int _limitIncrement = 20;
   String _textSearch = "";
   bool isLoading = false;
+  List<String> favourites = [];
   late SearchProvider searchProvider;
   Debouncer searchDebouncer = Debouncer(milliseconds: 300);
   late String currentuserId;
   final StreamController<bool> btnClearController =
       StreamController<bool>.broadcast();
   TextEditingController searchBarTec = TextEditingController();
-  late String _teste;
 
   @override
   void initState() {
     currentuserId = widget.currentuserId;
     searchProvider = context.read<SearchProvider>();
     listScrollController.addListener(scrollListener);
-    _teste = "init";
     super.initState();
   }
 
@@ -122,129 +121,122 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget buildItem(BuildContext context, int index, DocumentSnapshot? document,
-      SearchProvider searchProvider) {
+      SearchProvider homeProvider) {
     if (document != null) {
       String locale = Localizations.localeOf(context).languageCode;
       initializeDateFormatting(locale, null);
       Trip trip = Trip.fromDocument(document);
+      bool isFavourite = favourites.contains(trip.id);
 
       if (trip.user == currentuserId) {
         return const SizedBox.shrink();
       } else {
-        return StreamBuilder<DocumentSnapshot>(
-            stream: searchProvider.getFavourite(trip.id, currentuserId),
-            builder: (BuildContext context2,
-                AsyncSnapshot<DocumentSnapshot> snapshot) {
-              return Container(
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: ListTile(
-                            title: Text('${trip.country}, ${trip.location}'),
-                            subtitle: Row(children: [
-                              Flexible(
-                                  child: Column(
-                                children: [
-                                  Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                          'Start Date: ${DateFormat.yMd(locale).format(trip.startDate.toDate())}')),
-                                  Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                          'End Date: ${DateFormat.yMd(locale).format(trip.endDate.toDate())}')),
-                                ],
-                              ))
-                            ]),
-                            leading: SizedBox(
-                              width: 100,
-                              child: Image.network(
-                                'photoUrl',
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, object, stackTrace) {
-                                  return const Icon(
-                                    Icons.image,
-                                    size: 50,
-                                    color: ColorConstants.greyColor,
-                                  );
-                                },
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent? loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return SizedBox(
-                                    child: Center(
-                                      child: CircularProgressIndicator(
-                                        color: ColorConstants.themeColor,
-                                        value: loadingProgress
-                                                        .expectedTotalBytes !=
-                                                    null &&
-                                                loadingProgress
-                                                        .expectedTotalBytes !=
-                                                    null
-                                            ? loadingProgress
-                                                    .cumulativeBytesLoaded /
-                                                loadingProgress
-                                                    .expectedTotalBytes!
-                                            : null,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                        Column(
+        return Container(
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ListTile(
+                      title: Text('${trip.country}, ${trip.location}'),
+                      subtitle: Row(children: [
+                        Flexible(
+                            child: Column(
                           children: [
-                            IconButton(
-                              icon: Icon(snapshot.data?.exists == true
-                                  ? Icons.star
-                                  : Icons.star_border_outlined),
-                              color: snapshot.data?.exists == true
-                                  ? Colors.yellow
-                                  : Colors.grey,
-                              onPressed: () {
-                                setState(() {
-                                  if (snapshot.data?.exists == true) {
-                                    searchProvider.removeFavourite(
-                                        trip.id, currentuserId);
-                                  } else {
-                                    searchProvider.addFavourite(
-                                        trip.id, currentuserId);
-                                  }
-                                });
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.open_in_full_outlined,
-                                color: Colors.grey,
-                              ),
-                              onPressed: () {
-                                if (Utilities.isKeyboardShowing()) {
-                                  Utilities.closeKeyboard(context);
-                                }
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          TripDetails(document: document)),
-                                );
-                              },
-                            ),
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                    'Start Date: ${DateFormat.yMd(locale).format(trip.startDate.toDate())}')),
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                    'End Date: ${DateFormat.yMd(locale).format(trip.endDate.toDate())}')),
                           ],
-                        ),
-                      ],
+                        ))
+                      ]),
+                      leading: SizedBox(
+                          width: 100,
+                          child: trip.photoUrl.isNotEmpty
+                              ? Image.network(
+                                  trip.photoUrl,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, object, stackTrace) {
+                                    return const Icon(
+                                      Icons.image,
+                                      size: 50,
+                                      color: ColorConstants.greyColor,
+                                    );
+                                  },
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return SizedBox(
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          color: ColorConstants.themeColor,
+                                          value: loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null &&
+                                                  loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )
+                              : const Icon(
+                                  Icons.image,
+                                  size: 50,
+                                  color: ColorConstants.greyColor,
+                                )),
                     ),
                   ),
-                ),
-                margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
-              );
-            });
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: Icon(isFavourite
+                            ? Icons.star
+                            : Icons.star_border_outlined),
+                        onPressed: () {
+                          setState(() {
+                            if (!isFavourite) {
+                              favourites.add(trip.id);
+                            } else {
+                              favourites.remove(trip.id);
+                            }
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.open_in_full_outlined),
+                        onPressed: () {
+                          if (Utilities.isKeyboardShowing()) {
+                            Utilities.closeKeyboard(context);
+                          }
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    TripDetails(document: document)),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+        );
       }
     } else {
       return const SizedBox.shrink();

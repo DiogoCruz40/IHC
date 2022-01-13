@@ -32,7 +32,8 @@ class _ChatsListPageState extends State<ChatsListPage> {
   final int _limitIncrement = 20;
   String _textSearch = "";
   bool isLoading = false;
-
+  late List peersmessages;
+  late List idslist;
   late HomeProvider homeProvider;
   Debouncer searchDebouncer = Debouncer(milliseconds: 300);
 
@@ -52,6 +53,8 @@ class _ChatsListPageState extends State<ChatsListPage> {
 
   @override
   void initState() {
+    peersmessages = List.empty(growable: true);
+    idslist = [''];
     super.initState();
 
     homeProvider = context.read<HomeProvider>();
@@ -259,12 +262,10 @@ class _ChatsListPageState extends State<ChatsListPage> {
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasData) {
                   if ((snapshot.data?.docs.length ?? 0) > 0) {
-                    List peersmessages = List.empty(growable: true);
-                    List idslist = List.empty(growable: true);
-                    if (idslist.isNotEmpty || peersmessages.isNotEmpty) {
-                      idslist.clear();
-                      peersmessages.clear();
-                    }
+                    // if (idslist.isNotEmpty || peersmessages.isNotEmpty) {
+                    //   idslist.clear();
+                    //   peersmessages.clear();
+                    // }
                     snapshot.data?.docs
                         .forEach((doc) => peersmessages.add(doc.id));
 
@@ -296,10 +297,10 @@ class _ChatsListPageState extends State<ChatsListPage> {
                             _textSearch),
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (idslist.isNotEmpty || peersmessages.isNotEmpty) {
-                            idslist.clear();
-                            peersmessages.clear();
-                          }
+                          // if (idslist.isNotEmpty || peersmessages.isNotEmpty) {
+                          //   idslist.clear();
+                          //   peersmessages.clear();
+                          // }
                           if (snapshot.hasData) {
                             if ((snapshot.data?.docs.length ?? 0) > 0) {
                               return ListView.builder(

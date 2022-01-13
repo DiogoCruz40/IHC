@@ -1,8 +1,15 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:passenger/constants/constants.dart';
 import 'package:passenger/providers/providers.dart';
 import 'package:passenger/models/models.dart';
+import 'package:provider/src/provider.dart';
 
 class TripForm extends StatefulWidget {
   final HomeProvider passedHomeProvider;
@@ -22,23 +29,60 @@ class _TripFormState extends State<TripForm> {
   final _formKey = GlobalKey<FormState>();
   late String currentUserId;
   late HomeProvider homeProvider;
-
-  @override
-  initState() {
-    currentUserId = widget.passedCurrentUserId;
-    homeProvider = widget.passedHomeProvider;
-    super.initState();
-  }
+  late SettingProvider settingProvider;
 
   DateTime? endDate;
   DateTime? startDate;
   bool _descriptionIsValid = true;
-
+  bool isLoading = false;
+  File? avatarImageFile;
+  late String photoUrl;
   TextEditingController countryCtl = TextEditingController();
   TextEditingController locationCtl = TextEditingController();
   TextEditingController startDateCtl = TextEditingController();
   TextEditingController endDateCtl = TextEditingController();
   TextEditingController descriptionCtl = TextEditingController();
+
+  @override
+  initState() {
+    settingProvider = context.read<SettingProvider>();
+    photoUrl = '';
+    currentUserId = widget.passedCurrentUserId;
+    homeProvider = widget.passedHomeProvider;
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Future getImage() async {
+    ImagePicker imagePicker = ImagePicker();
+    PickedFile? pickedFile = await imagePicker
+        .getImage(source: ImageSource.gallery)
+        .catchError((err) {
+      Fluttertoast.showToast(msg: err.toString());
+    });
+    File? image;
+    if (pickedFile != null) {
+      image = File(pickedFile.path);
+    }
+    if (image != null) {
+      setState(() {
+        avatarImageFile = image;
+      });
+    }
+    UploadTask uploadTask =
+        settingProvider.uploadFile(avatarImageFile!, currentUserId);
+    TaskSnapshot snapshot = await uploadTask;
+    var downloadurl = await snapshot.ref.getDownloadURL();
+    setState(() {
+      isLoading = false;
+      photoUrl = downloadurl;
+    });
+    return downloadurl;
+  }
 
   Future _selectStartDate() async {
     DateTime? picked = await showDatePicker(
@@ -82,6 +126,63 @@ class _TripFormState extends State<TripForm> {
           key: _formKey,
           child: Column(
             children: [
+              CupertinoButton(
+                onPressed: getImage,
+                child: Container(
+                  margin: const EdgeInsets.all(10),
+                  child: avatarImageFile == null
+                      ? photoUrl.isNotEmpty
+                          ? Image.network(
+                              photoUrl,
+                              fit: BoxFit.cover,
+                              width: 200,
+                              height: 200,
+                              errorBuilder: (context, object, stackTrace) {
+                                return const Icon(
+                                  Icons.image,
+                                  size: 100,
+                                  color: ColorConstants.greyColor,
+                                );
+                              },
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return SizedBox(
+                                  width: 90,
+                                  height: 90,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: ColorConstants.themeColor,
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                      null &&
+                                                  loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : const Icon(
+                              Icons.image,
+                              size: 90,
+                              color: ColorConstants.greyColor,
+                            )
+                      : Image.file(
+                          avatarImageFile!,
+                          width: 200,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                ),
+              ),
               Container(
                 padding: const EdgeInsets.all(14),
                 child: TextFormField(
@@ -201,6 +302,7 @@ class _TripFormState extends State<TripForm> {
                         FirestoreConstants.country: countryCtl.text,
                         FirestoreConstants.location: locationCtl.text,
                         FirestoreConstants.description: descriptionCtl.text,
+                        FirestoreConstants.photoUrl: photoUrl,
                         FirestoreConstants.creationDate: Timestamp.now(),
                         FirestoreConstants.startDate:
                             Timestamp.fromDate(startDate!),
@@ -241,12 +343,13 @@ class TripFormEdit extends StatefulWidget {
   final HomeProvider passedHomeProvider;
   final String passedCurrentUserId;
   final Trip trip;
-
+  final String photoUrl;
   const TripFormEdit(
       {Key? key,
       required this.passedHomeProvider,
       required this.passedCurrentUserId,
-      required this.trip})
+      required this.trip,
+      required this.photoUrl})
       : super(key: key);
 
   @override
@@ -255,9 +358,10 @@ class TripFormEdit extends StatefulWidget {
 
 class _TripFormEditState extends State<TripFormEdit> {
   final _formKey = GlobalKey<FormState>();
+  late SettingProvider settingProvider;
   late String currentUserId;
   late HomeProvider homeProvider;
-
+  late String photoUrl;
   TextEditingController countryCtl = TextEditingController();
   TextEditingController locationCtl = TextEditingController();
   TextEditingController startDateCtl = TextEditingController();
@@ -267,9 +371,12 @@ class _TripFormEditState extends State<TripFormEdit> {
   DateTime? startDate;
   DateTime? endDate;
   bool _descriptionIsValid = true;
-
+  bool isLoading = false;
+  File? avatarImageFile;
   @override
   initState() {
+    settingProvider = context.read<SettingProvider>();
+    photoUrl = widget.photoUrl;
     currentUserId = widget.passedCurrentUserId;
     homeProvider = widget.passedHomeProvider;
     countryCtl.text = widget.trip.country;
@@ -282,6 +389,38 @@ class _TripFormEditState extends State<TripFormEdit> {
         widget.trip.endDate.microsecondsSinceEpoch);
     endDateCtl.text = endDate?.toIso8601String() ?? '';
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Future getImage() async {
+    ImagePicker imagePicker = ImagePicker();
+    PickedFile? pickedFile = await imagePicker
+        .getImage(source: ImageSource.gallery)
+        .catchError((err) {
+      Fluttertoast.showToast(msg: err.toString());
+    });
+    File? image;
+    if (pickedFile != null) {
+      image = File(pickedFile.path);
+    }
+    if (image != null) {
+      setState(() {
+        avatarImageFile = image;
+      });
+    }
+    UploadTask uploadTask =
+        settingProvider.uploadFile(avatarImageFile!, currentUserId);
+    TaskSnapshot snapshot = await uploadTask;
+    var downloadurl = await snapshot.ref.getDownloadURL();
+    setState(() {
+      isLoading = false;
+      photoUrl = downloadurl;
+    });
+    return downloadurl;
   }
 
   Future _selectStartDate() async {
@@ -326,6 +465,63 @@ class _TripFormEditState extends State<TripFormEdit> {
           key: _formKey,
           child: Column(
             children: [
+              CupertinoButton(
+                onPressed: getImage,
+                child: Container(
+                  margin: const EdgeInsets.all(10),
+                  child: avatarImageFile == null
+                      ? photoUrl.isNotEmpty
+                          ? Image.network(
+                              photoUrl,
+                              fit: BoxFit.cover,
+                              width: 200,
+                              height: 200,
+                              errorBuilder: (context, object, stackTrace) {
+                                return const Icon(
+                                  Icons.image,
+                                  size: 100,
+                                  color: ColorConstants.greyColor,
+                                );
+                              },
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return SizedBox(
+                                  width: 90,
+                                  height: 90,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: ColorConstants.themeColor,
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                      null &&
+                                                  loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : const Icon(
+                              Icons.image,
+                              size: 90,
+                              color: ColorConstants.greyColor,
+                            )
+                      : Image.file(
+                          avatarImageFile!,
+                          width: 200,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                ),
+              ),
               Container(
                 padding: const EdgeInsets.all(14),
                 child: TextFormField(
@@ -446,6 +642,7 @@ class _TripFormEditState extends State<TripFormEdit> {
                         FirestoreConstants.country: countryCtl.text,
                         FirestoreConstants.location: locationCtl.text,
                         FirestoreConstants.description: descriptionCtl.text,
+                        FirestoreConstants.photoUrl: photoUrl,
                         FirestoreConstants.creationDate: Timestamp.now(),
                         FirestoreConstants.startDate:
                             Timestamp.fromDate(startDate!),
