@@ -70,6 +70,14 @@ class SearchProvider {
         .snapshots();
   }
 
+  Stream<QuerySnapshot> getFavourites(String tripId) {
+    return firebaseFirestore
+        .collection(FirestoreConstants.pathTripCollection)
+        .doc(tripId)
+        .collection(FirestoreConstants.users)
+        .snapshots();
+  }
+
   Stream<DocumentSnapshot> getDocumentFireStore(
       String collectionPath, String docId) {
     return firebaseFirestore.collection(collectionPath).doc(docId).snapshots();
