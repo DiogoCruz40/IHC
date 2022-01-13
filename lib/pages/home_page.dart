@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:passenger/constants/constants.dart';
-import 'package:passenger/pages/chats_list_page.dart';
 import 'package:passenger/providers/providers.dart';
 import 'package:passenger/utils/utils.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
