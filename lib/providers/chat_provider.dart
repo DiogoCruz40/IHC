@@ -80,21 +80,21 @@ class ChatProvider {
         messageChat.toJson(),
       );
 
-      await firebaseMessaging
-          .sendMessage(
-              to: 'cy1k9rH9Sjm2Uil-deHwFO:APA91bHXdoLKXWsTb4_2kIgN76olkL1iw7FUpfw_giangG0TkFKQHJCuJTLu8v3QCQWIqyJwpWx1vynh9uH378vtlYjDEoPNqn--L04yRQOFx0CpDhy3Cv-cmTqq7dYsNveDYclUbkKe@fcm.googleapis.com',
-              data: {
-                'title': 'You have a message from $currentUserId',
-                'body': content,
-                'badge': '1',
-                'sound': 'default'
-              },
-              messageId: 'm-123',
-              messageType: '1',
-              ttl: 1,
-              collapseKey: '123')
-          .then((value) => print('message sucess'))
-          .catchError((e) => print(e));
+      // await firebaseMessaging
+      //     .sendMessage(
+      //         to: 'cy1k9rH9Sjm2Uil-deHwFO:APA91bHXdoLKXWsTb4_2kIgN76olkL1iw7FUpfw_giangG0TkFKQHJCuJTLu8v3QCQWIqyJwpWx1vynh9uH378vtlYjDEoPNqn--L04yRQOFx0CpDhy3Cv-cmTqq7dYsNveDYclUbkKe@fcm.googleapis.com',
+      //         data: {
+      //           'title': 'You have a message from $currentUserId',
+      //           'body': content,
+      //           'badge': '1',
+      //           'sound': 'default'
+      //         },
+      //         messageId: 'm-123',
+      //         messageType: '1',
+      //         ttl: 1,
+      //         collapseKey: '123')
+      //     .then((value) => print('message sucess'))
+      //     .catchError((e) => print(e));
     });
   }
 }
