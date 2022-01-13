@@ -93,6 +93,7 @@ class HomePageState extends State<HomePage> {
       //print('onMessage: $message');
       if (message.notification != null) {
         showNotification(message.notification!);
+        // Navigator.of(context).pushNamed(message['screen']);
       }
       return;
     });
@@ -130,12 +131,15 @@ class HomePageState extends State<HomePage> {
   void showNotification(RemoteNotification remoteNotification) async {
     AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      Platform.isAndroid ? 'com.teampassenger.passenger' : 'packageiosaqui',
-      'Passenger',
-      channelDescription: "Uma aplicação de viagens",
-      importance: Importance.max,
-      priority: Priority.high,
-    );
+            Platform.isAndroid
+                ? 'com.teampassenger.passenger'
+                : 'packageiosaqui',
+            'Passenger',
+            channelDescription: "Uma aplicação de viagens",
+            importance: Importance.max,
+            priority: Priority.high,
+            color: Colors.blueAccent);
+
     IOSNotificationDetails iOSPlatformChannelSpecifics =
         const IOSNotificationDetails();
     NotificationDetails platformChannelSpecifics = NotificationDetails(

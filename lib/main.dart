@@ -10,7 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'constants/constants.dart';
 import 'pages/pages.dart';
 import 'providers/providers.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +22,6 @@ class MyApp extends StatelessWidget {
   final SharedPreferences prefs;
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
-  final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
   MyApp({Key? key, required this.prefs}) : super(key: key);
 
@@ -60,10 +58,10 @@ class MyApp extends StatelessWidget {
         ),
         Provider<ChatProvider>(
           create: (_) => ChatProvider(
-              prefs: prefs,
-              firebaseFirestore: firebaseFirestore,
-              firebaseStorage: firebaseStorage,
-              firebaseMessaging: firebaseMessaging),
+            prefs: prefs,
+            firebaseFirestore: firebaseFirestore,
+            firebaseStorage: firebaseStorage,
+          ),
         ),
         Provider<SearchProvider>(
           create: (_) => SearchProvider(
