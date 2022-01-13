@@ -9,3 +9,4 @@ export 'search_page.dart';
 export 'trip_details_page.dart';
 export 'trip_form.dart';
 export 'chats_list_page.dart';
+export 'view_my_trip_page.dart';

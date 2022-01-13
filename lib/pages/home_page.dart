@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:passenger/constants/constants.dart';
+import 'package:passenger/pages/view_my_trip_page.dart';
 import 'package:passenger/providers/providers.dart';
 import 'package:passenger/utils/utils.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -550,79 +551,94 @@ class HomePageState extends State<HomePage> {
         return const SizedBox.shrink();
       } else {
         return Card(
-          margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-          child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-              child: ListTile(
-                title: Text('${trip.country}, ${trip.location}'),
-                subtitle: Row(children: [
-                  Flexible(
-                      child: Column(
-                    children: [
-                      Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                              'Start Date: ${DateFormat.yMd(locale).format(trip.startDate.toDate())}')),
-                      Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                              'End Date: ${DateFormat.yMd(locale).format(trip.endDate.toDate())}')),
-                    ],
-                  ))
-                ]),
-                trailing: SizedBox(
-                    width: 100,
-                    child: Row(
+          // margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                child: ListTile(
+                  title: Text('${trip.country}, ${trip.location}'),
+                  subtitle: Row(children: [
+                    Flexible(
+                        child: Column(
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            if (Utilities.isKeyboardShowing()) {
-                              Utilities.closeKeyboard(context);
-                            }
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TripFormEdit(
-                                    passedHomeProvider: homeProvider,
-                                    passedCurrentUserId: currentUserId,
-                                    photoUrl: trip.photoUrl,
-                                    trip: trip),
+                        Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                                'Start Date: ${DateFormat.yMd(locale).format(trip.startDate.toDate())}')),
+                        Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                                'End Date: ${DateFormat.yMd(locale).format(trip.endDate.toDate())}')),
+                      ],
+                    ))
+                  ]),
+                  trailing: SizedBox(
+                      width: 100,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              if (Utilities.isKeyboardShowing()) {
+                                Utilities.closeKeyboard(context);
+                              }
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TripFormEdit(
+                                      passedHomeProvider: homeProvider,
+                                      passedCurrentUserId: currentUserId,
+                                      photoUrl: trip.photoUrl,
+                                      trip: trip),
+                                ),
+                              );
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            color: Colors.red,
+                            onPressed: () => showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: Text(
+                                    'Delete "${trip.country}, ${trip.location}"'),
+                                content: const Text(
+                                    'Are you sure you want to delete this trip?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, 'No'),
+                                    child: const Text('No'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      homeProvider.removeDataFirestore(
+                                          FirestoreConstants.pathTripCollection,
+                                          trip.id);
+                                      Navigator.pop(context, 'Yes');
+                                    },
+                                    child: const Text('Yes'),
+                                  ),
+                                ],
                               ),
-                            );
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          color: Colors.red,
-                          onPressed: () => showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                              title: Text(
-                                  'Delete "${trip.country}, ${trip.location}"'),
-                              content: const Text(
-                                  'Are you sure you want to delete this trip?'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, 'No'),
-                                  child: const Text('No'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    homeProvider.removeDataFirestore(
-                                        FirestoreConstants.pathTripCollection,
-                                        trip.id);
-                                    Navigator.pop(context, 'Yes');
-                                  },
-                                  child: const Text('Yes'),
-                                ),
-                              ],
                             ),
                           ),
-                        ),
-                      ],
-                    )),
-              )),
+                        ],
+                      )),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ViewTrip(document: document)));
+                },
+                child: const Text('View'),
+              ),
+            ],
+          ),
         );
       }
     } else {
