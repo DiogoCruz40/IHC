@@ -160,40 +160,48 @@ class _SearchPageState extends State<SearchPage> {
                             ]),
                             leading: SizedBox(
                               width: 100,
-                              child: Image.network(
-                                'photoUrl',
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, object, stackTrace) {
-                                  return const Icon(
-                                    Icons.image,
-                                    size: 50,
-                                    color: ColorConstants.greyColor,
-                                  );
-                                },
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent? loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return SizedBox(
-                                    child: Center(
-                                      child: CircularProgressIndicator(
-                                        color: ColorConstants.themeColor,
-                                        value: loadingProgress
-                                                        .expectedTotalBytes !=
-                                                    null &&
-                                                loadingProgress
-                                                        .expectedTotalBytes !=
-                                                    null
-                                            ? loadingProgress
-                                                    .cumulativeBytesLoaded /
-                                                loadingProgress
-                                                    .expectedTotalBytes!
-                                            : null,
-                                      ),
+                              child: trip.photoUrl.isNotEmpty
+                                  ? Image.network(
+                                      trip.photoUrl,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, object, stackTrace) {
+                                        return const Icon(
+                                          Icons.image,
+                                          size: 50,
+                                          color: ColorConstants.greyColor,
+                                        );
+                                      },
+                                      loadingBuilder: (BuildContext context,
+                                          Widget child,
+                                          ImageChunkEvent? loadingProgress) {
+                                        if (loadingProgress == null)
+                                          return child;
+                                        return SizedBox(
+                                          child: Center(
+                                            child: CircularProgressIndicator(
+                                              color: ColorConstants.themeColor,
+                                              value: loadingProgress
+                                                              .expectedTotalBytes !=
+                                                          null &&
+                                                      loadingProgress
+                                                              .expectedTotalBytes !=
+                                                          null
+                                                  ? loadingProgress
+                                                          .cumulativeBytesLoaded /
+                                                      loadingProgress
+                                                          .expectedTotalBytes!
+                                                  : null,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : const Icon(
+                                      Icons.image,
+                                      size: 50,
+                                      color: ColorConstants.greyColor,
                                     ),
-                                  );
-                                },
-                              ),
                             ),
                           ),
                         ),
