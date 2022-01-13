@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:passenger/constants/constants.dart';
 import 'package:passenger/providers/providers.dart';
 import 'package:passenger/models/models.dart';
+// ignore: implementation_imports
 import 'package:provider/src/provider.dart';
 
 class TripForm extends StatefulWidget {
@@ -60,6 +61,7 @@ class _TripFormState extends State<TripForm> {
   Future getImage() async {
     ImagePicker imagePicker = ImagePicker();
     PickedFile? pickedFile = await imagePicker
+        // ignore: deprecated_member_use
         .getImage(source: ImageSource.gallery)
         .catchError((err) {
       Fluttertoast.showToast(msg: err.toString());
@@ -399,6 +401,7 @@ class _TripFormEditState extends State<TripFormEdit> {
   Future getImage() async {
     ImagePicker imagePicker = ImagePicker();
     PickedFile? pickedFile = await imagePicker
+        // ignore: deprecated_member_use
         .getImage(source: ImageSource.gallery)
         .catchError((err) {
       Fluttertoast.showToast(msg: err.toString());

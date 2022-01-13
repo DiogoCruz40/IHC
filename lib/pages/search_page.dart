@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:passenger/constants/constants.dart';
 import 'package:passenger/providers/providers.dart';
 import 'package:passenger/utils/utils.dart';
+// ignore: implementation_imports
 import 'package:provider/src/provider.dart';
 
 import '../models/models.dart';
@@ -175,8 +176,9 @@ class _SearchPageState extends State<SearchPage> {
                                       loadingBuilder: (BuildContext context,
                                           Widget child,
                                           ImageChunkEvent? loadingProgress) {
-                                        if (loadingProgress == null)
+                                        if (loadingProgress == null) {
                                           return child;
+                                        }
                                         return SizedBox(
                                           child: Center(
                                             child: CircularProgressIndicator(
@@ -203,6 +205,17 @@ class _SearchPageState extends State<SearchPage> {
                                       color: ColorConstants.greyColor,
                                     ),
                             ),
+                            onTap: () {
+                              if (Utilities.isKeyboardShowing()) {
+                                Utilities.closeKeyboard(context);
+                              }
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        TripDetails(document: document)),
+                              );
+                            },
                           ),
                         ),
                         Column(
@@ -224,23 +237,6 @@ class _SearchPageState extends State<SearchPage> {
                                         trip.id, currentuserId);
                                   }
                                 });
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.open_in_full_outlined,
-                                color: Colors.grey,
-                              ),
-                              onPressed: () {
-                                if (Utilities.isKeyboardShowing()) {
-                                  Utilities.closeKeyboard(context);
-                                }
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          TripDetails(document: document)),
-                                );
                               },
                             ),
                           ],

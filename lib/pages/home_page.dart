@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:passenger/constants/constants.dart';
-import 'package:passenger/pages/view_my_trip_page.dart';
 import 'package:passenger/providers/providers.dart';
 import 'package:passenger/utils/utils.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -36,7 +35,7 @@ class HomePageState extends State<HomePage> {
 
   int _limit = 20;
   final int _limitIncrement = 20;
-  String _textSearch = "";
+  final String _textSearch = "";
   bool isLoading = false;
 
   late AuthProvider authProvider;
@@ -326,16 +325,20 @@ class HomePageState extends State<HomePage> {
                   return SingleChildScrollView(
                     child: Column(children: [
                       Padding(
-                          padding: const EdgeInsets.all(14),
+                          padding: const EdgeInsets.all(22),
                           child: Row(
                             children: [
                               const Text("My Trips",
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 18)),
+                                      fontSize: 18,
+                                      color: Colors.grey)),
                               const Spacer(),
                               IconButton(
-                                icon: const Icon(Icons.add_circle_outlined),
+                                icon: const Icon(
+                                  Icons.add_circle_outlined,
+                                  color: Colors.grey,
+                                ),
                                 onPressed: () {
                                   if (Utilities.isKeyboardShowing()) {
                                     Utilities.closeKeyboard(context);
@@ -549,95 +552,145 @@ class HomePageState extends State<HomePage> {
       if (trip.user != currentUserId) {
         return const SizedBox.shrink();
       } else {
-        return Card(
-          // margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                child: ListTile(
-                  title: Text('${trip.country}, ${trip.location}'),
-                  subtitle: Row(children: [
-                    Flexible(
-                        child: Column(
-                      children: [
-                        Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                                'Start Date: ${DateFormat.yMd(locale).format(trip.startDate.toDate())}')),
-                        Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                                'End Date: ${DateFormat.yMd(locale).format(trip.endDate.toDate())}')),
-                      ],
-                    ))
-                  ]),
-                  trailing: SizedBox(
-                      width: 100,
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () {
-                              if (Utilities.isKeyboardShowing()) {
-                                Utilities.closeKeyboard(context);
-                              }
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => TripFormEdit(
-                                      passedHomeProvider: homeProvider,
-                                      passedCurrentUserId: currentUserId,
-                                      photoUrl: trip.photoUrl,
-                                      trip: trip),
-                                ),
-                              );
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            color: Colors.red,
-                            onPressed: () => showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: Text(
-                                    'Delete "${trip.country}, ${trip.location}"'),
-                                content: const Text(
-                                    'Are you sure you want to delete this trip?'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(context, 'No'),
-                                    child: const Text('No'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      homeProvider.removeDataFirestore(
-                                          FirestoreConstants.pathTripCollection,
-                                          trip.id);
-                                      Navigator.pop(context, 'Yes');
-                                    },
-                                    child: const Text('Yes'),
-                                  ),
-                                ],
+        return Container(
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ListTile(
+                      title: Text('${trip.country}, ${trip.location}'),
+                      subtitle: Row(children: [
+                        Flexible(
+                            child: Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                    'Start Date: ${DateFormat.yMd(locale).format(trip.startDate.toDate())}')),
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                    'End Date: ${DateFormat.yMd(locale).format(trip.endDate.toDate())}')),
+                          ],
+                        ))
+                      ]),
+                      leading: SizedBox(
+                        width: 100,
+                        child: trip.photoUrl.isNotEmpty
+                            ? Image.network(
+                                trip.photoUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, object, stackTrace) {
+                                  return const Icon(
+                                    Icons.image,
+                                    size: 50,
+                                    color: ColorConstants.greyColor,
+                                  );
+                                },
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  }
+                                  return SizedBox(
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: ColorConstants.themeColor,
+                                        value: loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null &&
+                                                loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )
+                            : const Icon(
+                                Icons.image,
+                                size: 50,
+                                color: ColorConstants.greyColor,
                               ),
+                      ),
+                      onTap: () {
+                        if (Utilities.isKeyboardShowing()) {
+                          Utilities.closeKeyboard(context);
+                        }
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ViewTrip(document: document)));
+                      },
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        color: Colors.grey,
+                        onPressed: () {
+                          if (Utilities.isKeyboardShowing()) {
+                            Utilities.closeKeyboard(context);
+                          }
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TripFormEdit(
+                                  passedHomeProvider: homeProvider,
+                                  passedCurrentUserId: currentUserId,
+                                  photoUrl: trip.photoUrl,
+                                  trip: trip),
                             ),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
+                        onPressed: () => showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: Text(
+                                'Delete "${trip.country}, ${trip.location}"'),
+                            content: const Text(
+                                'Are you sure you want to delete this trip?'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'No'),
+                                child: const Text('No'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  homeProvider.removeDataFirestore(
+                                      FirestoreConstants.pathTripCollection,
+                                      trip.id);
+                                  Navigator.pop(context, 'Yes');
+                                },
+                                child: const Text('Yes'),
+                              ),
+                            ],
                           ),
-                        ],
-                      )),
-                ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ViewTrip(document: document)));
-                },
-                child: const Text('View'),
-              ),
-            ],
+            ),
           ),
+          margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
         );
       }
     } else {
@@ -687,7 +740,7 @@ class ChoicePage extends StatelessWidget {
         }
       case AppConstants.profileTitle:
         {
-          return Profile();
+          return const Profile();
         }
     }
     return Card(

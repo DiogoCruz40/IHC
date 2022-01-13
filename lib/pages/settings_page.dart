@@ -78,6 +78,7 @@ class SettingsPageStateState extends State<SettingsPageState> {
   Future getImage() async {
     ImagePicker imagePicker = ImagePicker();
     PickedFile? pickedFile = await imagePicker
+        // ignore: deprecated_member_use
         .getImage(source: ImageSource.gallery)
         .catchError((err) {
       Fluttertoast.showToast(msg: err.toString());
