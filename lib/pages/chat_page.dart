@@ -499,55 +499,87 @@ class ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            Material(
-              child: Image.network(
-                peerAvatar,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: ColorConstants.themeColor,
-                      value: loadingProgress.expectedTotalBytes != null &&
-                              loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                    ),
+        title: StreamBuilder<DocumentSnapshot>(
+            stream: chatProvider.getUserStream(peerId),
+            builder: (BuildContext context,
+                AsyncSnapshot<DocumentSnapshot> snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data!.exists) {
+                  UserChat userChat = UserChat.fromDocument(snapshot.data!);
+                  return Row(
+                    children: [
+                      Material(
+                        child: Image.network(
+                          userChat.photoUrl,
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              width: 35,
+                              height: 35,
+                              child: Center(
+                                child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: ColorConstants.themeColor,
+                                    value: loadingProgress.expectedTotalBytes !=
+                                                null &&
+                                            loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, object, stackTrace) {
+                            return const Icon(
+                              Icons.account_circle,
+                              size: 35,
+                              color: ColorConstants.greyColor,
+                            );
+                          },
+                          width: 35,
+                          height: 35,
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(18),
+                        ),
+                        clipBehavior: Clip.hardEdge,
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      Expanded(
+                        child: Text(
+                          userChat.nickname,
+                          style: const TextStyle(
+                              fontSize: 22.0,
+                              fontFamily: AppConstants.fontfamily,
+                              overflow: TextOverflow.fade),
+                        ),
+                      ),
+                    ],
                   );
-                },
-                errorBuilder: (context, object, stackTrace) {
-                  return const Icon(
-                    Icons.account_circle,
-                    size: 35,
-                    color: ColorConstants.greyColor,
-                  );
-                },
-                width: 35,
-                height: 35,
-                fit: BoxFit.cover,
-              ),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(15),
-              ),
-              clipBehavior: Clip.hardEdge,
-            ),
-            const SizedBox(
-              width: 15,
-            ),
-            Expanded(
-              child: Text(
-                peerNickname,
-                style: const TextStyle(
-                    fontSize: 22.0,
-                    fontFamily: AppConstants.fontfamily,
-                    overflow: TextOverflow.fade),
-              ),
-            ),
-          ],
-        ),
+                } else {
+                  Fluttertoast.showToast(msg: "User not found");
+                  Navigator.pop(context);
+                  return Container();
+                }
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: ColorConstants.themeColor,
+                  ),
+                );
+              }
+            }),
         //centerTitle: true,
         actions: [
           ElevatedButton.icon(

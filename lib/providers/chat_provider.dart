@@ -44,6 +44,13 @@ class ChatProvider {
         .snapshots();
   }
 
+  Stream<DocumentSnapshot> getUserStream(String userid) {
+    return firebaseFirestore
+        .collection(FirestoreConstants.pathUserCollection)
+        .doc(userid)
+        .snapshots();
+  }
+
   void sendMessage(String content, int type, String groupChatId,
       String currentUserId, String peerId) async {
     await firebaseFirestore
