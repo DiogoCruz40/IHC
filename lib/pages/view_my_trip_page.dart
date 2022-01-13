@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:passenger/constants/constants.dart';
-import 'package:passenger/constants/firestore_constants.dart';
 import 'package:passenger/providers/providers.dart';
 import 'package:passenger/utils/utils.dart';
 import 'package:intl/date_symbol_data_local.dart';

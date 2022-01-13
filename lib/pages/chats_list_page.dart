@@ -1,29 +1,22 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:passenger/constants/constants.dart';
 import 'package:passenger/providers/providers.dart';
 import 'package:passenger/utils/utils.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
 //import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-import 'dart:convert';
 import '../models/models.dart';
-import '../widgets/widgets.dart';
 import 'pages.dart';
 
 class ChatsListPage extends StatefulWidget {
-  String currentuserId;
-  ChatsListPage({Key? key, required this.currentuserId}) : super(key: key);
+  final String currentuserId;
+  const ChatsListPage({Key? key, required this.currentuserId})
+      : super(key: key);
 
   @override
-  _ChatsListPageState createState() => _ChatsListPageState(this.currentuserId);
+  _ChatsListPageState createState() => _ChatsListPageState();
 }
 
 class _ChatsListPageState extends State<ChatsListPage> {
@@ -41,9 +34,7 @@ class _ChatsListPageState extends State<ChatsListPage> {
       StreamController<bool>.broadcast();
   TextEditingController searchBarTec = TextEditingController();
 
-  String currentuserId;
-
-  _ChatsListPageState(this.currentuserId);
+  late String currentuserId;
 
   @override
   void dispose() {
@@ -53,6 +44,7 @@ class _ChatsListPageState extends State<ChatsListPage> {
 
   @override
   void initState() {
+    currentuserId = widget.currentuserId;
     peersmessages = List.empty(growable: true);
     idslist = [''];
     super.initState();

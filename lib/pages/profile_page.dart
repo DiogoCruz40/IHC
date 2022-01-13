@@ -13,7 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
-  Profile({Key? key}) : super(key: key);
+  const Profile({Key? key}) : super(key: key);
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -57,6 +57,7 @@ class _ProfileState extends State<Profile> {
   Future getImage() async {
     ImagePicker imagePicker = ImagePicker();
     PickedFile? pickedFile = await imagePicker
+        // ignore: deprecated_member_use
         .getImage(source: ImageSource.gallery)
         .catchError((err) {
       Fluttertoast.showToast(msg: err.toString());
