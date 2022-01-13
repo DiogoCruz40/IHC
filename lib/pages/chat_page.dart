@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/widgets.dart';
+import 'media_chat_page.dart';
 import 'pages.dart';
 
 class ChatPage extends StatefulWidget {
@@ -582,20 +583,25 @@ class ChatPageState extends State<ChatPage> {
             }),
         //centerTitle: true,
         actions: [
-          ElevatedButton.icon(
-            onPressed: () {
-              //Inserir aquii a chamadaaaa
-            },
-            icon: const Icon(
-              Icons.phone_in_talk_rounded,
-              size: 28,
-            ),
-            label: const Text(''),
-            style: ElevatedButton.styleFrom(elevation: 0.0),
-          ),
+          // ElevatedButton.icon(
+          //   onPressed: () {
+          //     //Inserir aquii a chamadaaaa
+          //   },
+          //   icon: const Icon(
+          //     Icons.phone_in_talk_rounded,
+          //     size: 28,
+          //   ),
+          //   label: const Text(''),
+          //   style: ElevatedButton.styleFrom(elevation: 0.0),
+          // ),
           ElevatedButton.icon(
             onPressed: () {
               //Inserir aquii a video chamadaaaa
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MediaChatPage(),
+                  ));
             },
             icon: const Icon(
               Icons.video_call,
