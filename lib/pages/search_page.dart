@@ -239,6 +239,7 @@ class _SearchPageState extends State<SearchPage> {
                                 });
                               },
                             ),
+                            const IconButton(onPressed: null, icon: Icon(null))
                           ],
                         ),
                       ],
@@ -268,11 +269,14 @@ class _SearchPageState extends State<SearchPage> {
               if (snapshot.hasData) {
                 if ((snapshot.data?.docs.length ?? 0) > 0) {
                   return ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics()),
                     padding: const EdgeInsets.all(10),
                     itemBuilder: (context, index) => buildItem(context, index,
                         snapshot.data?.docs[index], searchProvider),
                     itemCount: snapshot.data?.docs.length,
-                    controller: listScrollController,
                   );
                 } else {
                   return const Center(

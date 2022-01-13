@@ -188,158 +188,163 @@ class _ViewTripState extends State<ViewTrip> {
             overflow: TextOverflow.fade,
           ),
         ),
-        body: Column(
-          children: [
-            Container(
-              alignment: Alignment.center,
-              child: CupertinoButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              FullPhotoPage(url: trip.photoUrl)));
-                },
-                child: Container(
-                    margin: const EdgeInsets.all(10),
-                    child: trip.photoUrl.isNotEmpty
-                        ? Image.network(
-                            trip.photoUrl,
-                            fit: BoxFit.cover,
-                            width: 200,
-                            height: 200,
-                            errorBuilder: (context, object, stackTrace) {
-                              return const Icon(
-                                Icons.image,
-                                size: 100,
-                                color: ColorConstants.greyColor,
-                              );
-                            },
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return SizedBox(
-                                width: 90,
-                                height: 90,
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    color: ColorConstants.themeColor,
-                                    value: loadingProgress.expectedTotalBytes !=
-                                                null &&
-                                            loadingProgress
-                                                    .expectedTotalBytes !=
-                                                null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
-                                        : null,
+        body: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics()),
+          child: Column(
+            children: [
+              Container(
+                alignment: Alignment.center,
+                child: CupertinoButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                FullPhotoPage(url: trip.photoUrl)));
+                  },
+                  child: Container(
+                      margin: const EdgeInsets.all(10),
+                      child: trip.photoUrl.isNotEmpty
+                          ? Image.network(
+                              trip.photoUrl,
+                              fit: BoxFit.cover,
+                              width: 200,
+                              height: 200,
+                              errorBuilder: (context, object, stackTrace) {
+                                return const Icon(
+                                  Icons.image,
+                                  size: 100,
+                                  color: ColorConstants.greyColor,
+                                );
+                              },
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return SizedBox(
+                                  width: 90,
+                                  height: 90,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: ColorConstants.themeColor,
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                      null &&
+                                                  loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          )
-                        : const Icon(
-                            Icons.image,
-                            size: 100,
-                            color: ColorConstants.greyColor,
-                          )),
+                                );
+                              },
+                            )
+                          : const Icon(
+                              Icons.image,
+                              size: 100,
+                              color: ColorConstants.greyColor,
+                            )),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
-                                style: const TextStyle(
-                                  fontSize: 14.0,
-                                  color: Colors.black,
-                                ),
-                                children: [
-                                  // TextSpan(
-                                  //     text: 'De ',
-                                  //     style: TextStyle(
-                                  //         fontFamily: AppConstants.fontfamily)),
-                                  TextSpan(
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                  style: const TextStyle(
+                                    fontSize: 14.0,
+                                    color: Colors.black,
+                                  ),
+                                  children: [
+                                    // TextSpan(
+                                    //     text: 'De ',
+                                    //     style: TextStyle(
+                                    //         fontFamily: AppConstants.fontfamily)),
+                                    TextSpan(
+                                        text: DateFormat.yMd(locale)
+                                            .format(trip.startDate.toDate())),
+                                    const TextSpan(
+                                      text: ' to ',
+                                      style: TextStyle(
+                                          fontFamily: AppConstants.fontfamily),
+                                    ),
+                                    TextSpan(
                                       text: DateFormat.yMd(locale)
-                                          .format(trip.startDate.toDate())),
-                                  const TextSpan(
-                                    text: ' to ',
+                                          .format(trip.endDate.toDate()),
+                                    ),
+                                  ])),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: RichText(
+                              text: TextSpan(
+                                  style: const TextStyle(
+                                    fontSize: 14.0,
+                                    color: Colors.black,
+                                  ),
+                                  children: [
+                                const TextSpan(
+                                    text: 'Destination: ',
                                     style: TextStyle(
-                                        fontFamily: AppConstants.fontfamily),
+                                        fontFamily: AppConstants.fontfamily)),
+                                TextSpan(
+                                    text: '${trip.country}, ${trip.location}'),
+                              ])),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: RichText(
+                              text: TextSpan(
+                                  style: const TextStyle(
+                                    fontSize: 14.0,
+                                    color: Colors.black,
                                   ),
-                                  TextSpan(
-                                    text: DateFormat.yMd(locale)
-                                        .format(trip.endDate.toDate()),
-                                  ),
-                                ])),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: RichText(
-                            text: TextSpan(
-                                style: const TextStyle(
-                                  fontSize: 14.0,
-                                  color: Colors.black,
-                                ),
-                                children: [
-                              const TextSpan(
-                                  text: 'Destination: ',
-                                  style: TextStyle(
-                                      fontFamily: AppConstants.fontfamily)),
-                              TextSpan(
-                                  text: '${trip.country}, ${trip.location}'),
-                            ])),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: RichText(
-                            text: TextSpan(
-                                style: const TextStyle(
-                                  fontSize: 14.0,
-                                  color: Colors.black,
-                                ),
-                                children: [
-                              const TextSpan(
-                                  text: 'Description: ',
-                                  style: TextStyle(
-                                      fontFamily: AppConstants.fontfamily)),
-                              TextSpan(text: trip.description),
-                            ])),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: const Text("User favorites",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18)),
-                  ),
-                ],
+                                  children: [
+                                const TextSpan(
+                                    text: 'Description: ',
+                                    style: TextStyle(
+                                        fontFamily: AppConstants.fontfamily)),
+                                TextSpan(text: trip.description),
+                              ])),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: const Text("User favorites",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18)),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: StreamBuilder(
+              StreamBuilder(
                   stream: searchProvider.getFavourites(trip.id),
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -371,7 +376,11 @@ class _ViewTripState extends State<ViewTrip> {
                                     itemBuilder: (context, index) => buildItem(
                                         context, snapshot.data?.docs[index]),
                                     itemCount: snapshot.data?.docs.length,
-                                    controller: listScrollController,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    controller: null,
+                                    primary: false,
+                                    shrinkWrap: true,
                                   );
                                 } else {
                                   return const Center(
@@ -404,8 +413,8 @@ class _ViewTripState extends State<ViewTrip> {
                     //   ),
                     // );
                   }),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     } else {
