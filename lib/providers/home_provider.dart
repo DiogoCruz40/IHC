@@ -45,8 +45,17 @@ class HomeProvider {
     return firebaseFirestore.collection(pathCollection).snapshots();
   }
 
-  Stream<QuerySnapshot> getStreamUsersFireStore(List listofids,
-      String pathCollectionUsers, String currentuserid, String? textSearch) {
+  Stream<QuerySnapshot> getStreamTripsFirestore(
+      String pathCollectionTrips, String pathCollectionUsers, String tripid) {
+    return firebaseFirestore
+        .collection(pathCollectionTrips)
+        .doc(tripid)
+        .collection(pathCollectionUsers)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> getStreamUsersFireStore(
+      List listofids, String pathCollectionUsers, String? textSearch) {
     // var documentreference = await firebaseFirestore
     //     .collection(FirestoreConstants.pathMessageCollection)
     //     .get();

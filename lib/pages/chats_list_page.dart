@@ -290,11 +290,8 @@ class _ChatsListPageState extends State<ChatsListPage> {
                     }
 
                     return StreamBuilder(
-                        stream: homeProvider.getStreamUsersFireStore(
-                            idslist,
-                            FirestoreConstants.pathUserCollection,
-                            currentuserId,
-                            _textSearch),
+                        stream: homeProvider.getStreamUsersFireStore(idslist,
+                            FirestoreConstants.pathUserCollection, _textSearch),
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {
                           // if (idslist.isNotEmpty || peersmessages.isNotEmpty) {
