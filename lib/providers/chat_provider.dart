@@ -123,8 +123,8 @@ sendNotificationToDriver(
       },
       body: constructFCMPayload(token, content, docfrom),
     );
-    print('FCM request for device sent!');
-    print(response.statusCode);
+    // print('FCM request for device sent!');
+    // print(response.statusCode);
   } catch (e) {
     print(e);
   }
@@ -150,6 +150,6 @@ String constructFCMPayload(
     'to': token,
   });
 
-  print(res.toString());
+  // print(res.toString());
   return res;
 }
