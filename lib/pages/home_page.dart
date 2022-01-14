@@ -169,7 +169,7 @@ class HomePageState extends State<HomePage> {
       channelDescription: "Uma aplicação de viagens",
       importance: Importance.max,
       priority: Priority.high,
-      color: Colors.blue,
+      // color: Colors.blue,
     );
 
     IOSNotificationDetails iOSPlatformChannelSpecifics =
@@ -179,6 +179,7 @@ class HomePageState extends State<HomePage> {
         iOS: iOSPlatformChannelSpecifics);
 
     //print(remoteNotification);
+    configLocalNotification(remoteMessage);
 
     await flutterLocalNotificationsPlugin.show(
       0,
@@ -187,7 +188,6 @@ class HomePageState extends State<HomePage> {
       platformChannelSpecifics,
       payload: 'messageopened',
     );
-    configLocalNotification(remoteMessage);
   }
 
   Future<bool> onBackPress() {
