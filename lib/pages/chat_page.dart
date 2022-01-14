@@ -292,41 +292,60 @@ class ChatPageState extends State<ChatPage> {
               Row(
                 children: <Widget>[
                   isLastMessageLeft(index)
-                      ? Material(
-                          child: Image.network(
-                            peerAvatar,
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
+                      ? StreamBuilder<DocumentSnapshot>(
+                          stream:
+                              chatProvider.getUserStream(messageChat.idFrom),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<DocumentSnapshot> snapshot) {
+                            if (snapshot.hasData && snapshot.data!.exists) {
+                              return Material(
+                                child: Image.network(
+                                  snapshot.data!.get('photoUrl'),
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: ColorConstants.themeColor,
+                                        value: loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null &&
+                                                loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, object, stackTrace) {
+                                    return const Icon(
+                                      Icons.account_circle,
+                                      size: 35,
+                                      color: ColorConstants.greyColor,
+                                    );
+                                  },
+                                  width: 35,
+                                  height: 35,
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(18),
+                                ),
+                                clipBehavior: Clip.hardEdge,
+                              );
+                            } else {
+                              return const Center(
                                 child: CircularProgressIndicator(
                                   color: ColorConstants.themeColor,
-                                  value: loadingProgress.expectedTotalBytes !=
-                                              null &&
-                                          loadingProgress.expectedTotalBytes !=
-                                              null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
                                 ),
                               );
-                            },
-                            errorBuilder: (context, object, stackTrace) {
-                              return const Icon(
-                                Icons.account_circle,
-                                size: 35,
-                                color: ColorConstants.greyColor,
-                              );
-                            },
-                            width: 35,
-                            height: 35,
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(18),
-                          ),
-                          clipBehavior: Clip.hardEdge,
-                        )
+                            }
+                          })
                       : Container(width: 35),
                   messageChat.type == TypeMessage.text
                       ? Container(
@@ -346,7 +365,7 @@ class ChatPageState extends State<ChatPage> {
                               child: TextButton(
                                 child: Material(
                                   child: Image.network(
-                                    peerAvatar,
+                                    messageChat.content,
                                     loadingBuilder: (BuildContext context,
                                         Widget child,
                                         ImageChunkEvent? loadingProgress) {

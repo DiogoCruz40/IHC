@@ -25,8 +25,8 @@ class _ChatsListPageState extends State<ChatsListPage> {
   final int _limitIncrement = 20;
   String _textSearch = "";
   bool isLoading = false;
-  late List peersmessages = List.empty(growable: true);
-  late List idslist = List.empty(growable: true);
+  late List peersmessages;
+  late List idslist;
   late HomeProvider homeProvider;
   Debouncer searchDebouncer = Debouncer(milliseconds: 300);
 
@@ -46,7 +46,9 @@ class _ChatsListPageState extends State<ChatsListPage> {
   void initState() {
     currentuserId = widget.currentuserId;
     peersmessages = List.empty(growable: true);
-    idslist = [''];
+    idslist = List.empty(growable: true);
+    // peersmessages = [''];
+    //idslist = [''];
     super.initState();
 
     homeProvider = context.read<HomeProvider>();
@@ -254,10 +256,10 @@ class _ChatsListPageState extends State<ChatsListPage> {
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasData) {
                   if ((snapshot.data?.docs.length ?? 0) > 0) {
-                    // if (idslist.isNotEmpty || peersmessages.isNotEmpty) {
-                    //   idslist.clear();
-                    //   peersmessages.clear();
-                    // }
+                    if (idslist.isNotEmpty || peersmessages.isNotEmpty) {
+                      idslist.clear();
+                      peersmessages.clear();
+                    }
                     snapshot.data?.docs
                         .forEach((doc) => peersmessages.add(doc.id));
 
