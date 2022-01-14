@@ -123,7 +123,7 @@ class HomePageState extends State<HomePage> {
           MaterialPageRoute(
             builder: (context) => ChatPage(
               peerNickname: remoteMessage.data['name'],
-              peerAvatar: remoteMessage.data['name'],
+              peerAvatar: remoteMessage.data['user_photo'],
               peerId: remoteMessage.data['user_id'],
             ),
           ));
