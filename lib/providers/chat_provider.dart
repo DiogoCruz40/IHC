@@ -136,6 +136,8 @@ String constructFCMPayload(
     'notification': {
       "body": "${docfrom.get('nickname')} disse: $content",
       "title": "${docfrom.get('nickname')}",
+      "sound": "default",
+      "badge": 1
     },
     "priority": "high",
     'data': {
