@@ -47,6 +47,7 @@ class _ChatsListPageState extends State<ChatsListPage> {
     currentuserId = widget.currentuserId;
     peersmessages = List.empty(growable: true);
     idslist = List.empty(growable: true);
+
     // peersmessages = [''];
     //idslist = [''];
     super.initState();
