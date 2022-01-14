@@ -54,6 +54,7 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
     authProvider = context.read<AuthProvider>();
     homeProvider = context.read<HomeProvider>();
 
@@ -66,7 +67,7 @@ class HomePageState extends State<HomePage> {
       );
     }
     registerNotification();
-    configLocalNotification();
+
     listScrollController.addListener(scrollListener);
   }
 
@@ -89,23 +90,55 @@ class HomePageState extends State<HomePage> {
       Fluttertoast.showToast(msg: err.message.toString());
     });
 
+    firebaseMessaging.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null) {
+        _handleMessage(message);
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      // print('hey');
+      if (message.notification != null) {
+        // just delay for showing this slash page clearer because it too fast
+        _handleMessage(message);
+
+        // print(message.data);
+      }
+      return;
+    });
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       //print('onMessage: $message');
       if (message.notification != null) {
-        showNotification(message.notification!);
+        showNotification(message.notification!, message);
+        // print(message.data);
       }
       return;
     });
   }
 
-  void configLocalNotification() {
+  void _handleMessage(RemoteMessage remoteMessage) async {
+    if (remoteMessage.data['screen'] == 'open') {
+      await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(
+              peerNickname: remoteMessage.data['name'],
+              peerAvatar: remoteMessage.data['user_photo'],
+              peerId: remoteMessage.data['user_id'],
+            ),
+          ));
+    }
+  }
+
+  void configLocalNotification(RemoteMessage remoteMessage) {
     AndroidInitializationSettings initializationSettingsAndroid =
         const AndroidInitializationSettings('app_icon');
     IOSInitializationSettings initializationSettingsIOS =
         const IOSInitializationSettings();
     InitializationSettings initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: (payload) => _handleMessage(remoteMessage));
   }
 
   void scrollListener() {
@@ -127,7 +160,8 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  void showNotification(RemoteNotification remoteNotification) async {
+  void showNotification(RemoteNotification remoteNotification,
+      RemoteMessage remoteMessage) async {
     AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       Platform.isAndroid ? 'com.teampassenger.passenger' : 'packageiosaqui',
@@ -135,7 +169,9 @@ class HomePageState extends State<HomePage> {
       channelDescription: "Uma aplicação de viagens",
       importance: Importance.max,
       priority: Priority.high,
+      color: Colors.blue,
     );
+
     IOSNotificationDetails iOSPlatformChannelSpecifics =
         const IOSNotificationDetails();
     NotificationDetails platformChannelSpecifics = NotificationDetails(
@@ -149,8 +185,9 @@ class HomePageState extends State<HomePage> {
       remoteNotification.title,
       remoteNotification.body,
       platformChannelSpecifics,
-      payload: null,
+      payload: 'messageopened',
     );
+    configLocalNotification(remoteMessage);
   }
 
   Future<bool> onBackPress() {

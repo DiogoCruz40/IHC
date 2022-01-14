@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,18 +6,20 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:passenger/constants/constants.dart';
 import 'package:passenger/models/models.dart';
+import 'package:passenger/pages/chat_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class ChatProvider {
   final SharedPreferences prefs;
   final FirebaseFirestore firebaseFirestore;
   final FirebaseStorage firebaseStorage;
-  final FirebaseMessaging firebaseMessaging;
-  ChatProvider(
-      {required this.firebaseFirestore,
-      required this.prefs,
-      required this.firebaseStorage,
-      required this.firebaseMessaging});
+
+  ChatProvider({
+    required this.firebaseFirestore,
+    required this.prefs,
+    required this.firebaseStorage,
+  });
 
   String? getPref(String key) {
     return prefs.getString(key);
@@ -79,23 +82,21 @@ class ChatProvider {
         documentReference,
         messageChat.toJson(),
       );
-
-      // await firebaseMessaging
-      //     .sendMessage(
-      //         to: 'cy1k9rH9Sjm2Uil-deHwFO:APA91bHXdoLKXWsTb4_2kIgN76olkL1iw7FUpfw_giangG0TkFKQHJCuJTLu8v3QCQWIqyJwpWx1vynh9uH378vtlYjDEoPNqn--L04yRQOFx0CpDhy3Cv-cmTqq7dYsNveDYclUbkKe@fcm.googleapis.com',
-      //         data: {
-      //           'title': 'You have a message from $currentUserId',
-      //           'body': content,
-      //           'badge': '1',
-      //           'sound': 'default'
-      //         },
-      //         messageId: 'm-123',
-      //         messageType: '1',
-      //         ttl: 1,
-      //         collapseKey: '123')
-      //     .then((value) => print('message sucess'))
-      //     .catchError((e) => print(e));
     });
+    var docuserto = await firebaseFirestore
+        .collection(FirestoreConstants.pathUserCollection)
+        .doc(peerId)
+        .get();
+
+    var docuserfrom = await firebaseFirestore
+        .collection(FirestoreConstants.pathUserCollection)
+        .doc(currentUserId)
+        .get();
+
+    if (docuserto.get('chattingWith').toString() != currentUserId) {
+      sendNotificationToDriver(
+          docuserto.get('pushToken'), content, docuserfrom);
+    }
   }
 }
 
@@ -103,4 +104,52 @@ class TypeMessage {
   static const text = 0;
   static const image = 1;
   static const sticker = 2;
+}
+
+sendNotificationToDriver(
+    String token, String content, DocumentSnapshot docfrom) async {
+  if (token == null) {
+    print('Unable to send FCM message, no token exists.');
+    return;
+  }
+
+  try {
+    var response = await http.post(
+      Uri.parse('https://fcm.googleapis.com/fcm/send'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization':
+            'key=AAAA4OMxGBI:APA91bEkUa2-ce9MIslQsKsChiQl6kOXsyUo3BfwFRUWvq0PswpBEPhFHdnBAszF_oBAm17NDicXEv-PpgjAddnsCTaKiSiO5AxYz9Xax6iTxv311M80a90OXByUX7eLBxNZIN7ghZ9a',
+      },
+      body: constructFCMPayload(token, content, docfrom),
+    );
+    // print('FCM request for device sent!');
+    // print(response.statusCode);
+  } catch (e) {
+    print(e);
+  }
+}
+
+String constructFCMPayload(
+    String token, String content, DocumentSnapshot docfrom) {
+  var res = jsonEncode({
+    'notification': {
+      "body": "${docfrom.get('nickname')} disse: $content",
+      "title": "${docfrom.get('nickname')}",
+    },
+    "priority": "high",
+    'data': {
+      "click_action": "FLUTTER_NOTIFICATION_CLICK",
+      "name": "${docfrom.get('nickname')}",
+      "user_id": docfrom.id,
+      "user_photo": "${docfrom.get('photoUrl')}",
+      "screen": "open",
+      // "screen": "ChatPage(peerAvatar: , peerNickname: ,peerId: )",
+      // "ride_request_id": rideRequestId,
+    },
+    'to': token,
+  });
+
+  // print(res.toString());
+  return res;
 }

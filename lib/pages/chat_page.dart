@@ -197,7 +197,7 @@ class ChatPageState extends State<ChatPage> {
                         child: OutlinedButton(
                           child: Material(
                             child: Image.network(
-                              messageChat.content,
+                              peerAvatar,
                               loadingBuilder: (BuildContext context,
                                   Widget child,
                                   ImageChunkEvent? loadingProgress) {
@@ -346,7 +346,7 @@ class ChatPageState extends State<ChatPage> {
                               child: TextButton(
                                 child: Material(
                                   child: Image.network(
-                                    messageChat.content,
+                                    peerAvatar,
                                     loadingBuilder: (BuildContext context,
                                         Widget child,
                                         ImageChunkEvent? loadingProgress) {
