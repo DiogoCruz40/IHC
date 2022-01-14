@@ -136,15 +136,15 @@ String constructFCMPayload(
     'notification': {
       "body": "${docfrom.get('nickname')} disse: $content",
       "title": "${docfrom.get('nickname')}",
-      "icon": "images/app_icon.png",
     },
     "priority": "high",
     'data': {
-      "click_action": "FLUTTER_NOTIFIATION_CLICK",
-      "status": "done",
-      "sound": "default",
-      "screen":
-          "ChatPage(peerAvatar: ${docfrom.get('photoUrl')}, peerNickname: ${docfrom.get('nickname')},peerId: ${docfrom.id})",
+      "click_action": "FLUTTER_NOTIFICATION_CLICK",
+      "name": "${docfrom.get('nickname')}",
+      "user_id": docfrom.id,
+      "user_photo": "${docfrom.get('photoUrl')}",
+      "screen": "open",
+      // "screen": "ChatPage(peerAvatar: , peerNickname: ,peerId: )",
       // "ride_request_id": rideRequestId,
     },
     'to': token,
