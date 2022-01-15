@@ -75,6 +75,11 @@ class HomeProvider {
     //   }
     // }
     //print(docsidsto);
+
+    if (listofids.isEmpty) {
+      listofids.add('');
+    }
+
     if (textSearch != null && textSearch.isNotEmpty == true) {
       return firebaseFirestore
           .collection(pathCollectionUsers)
@@ -86,13 +91,15 @@ class HomeProvider {
                 String.fromCharCode(
                     textSearch.codeUnitAt(textSearch.length - 1) + 1),
           )
-          .where("id", whereIn: listofids)
+          .where("id",
+              whereIn: listofids) // where in only can have 10 elems at a time
           .snapshots();
     } else {
       return firebaseFirestore
           .collection(pathCollectionUsers)
           .orderBy(FirestoreConstants.nickname, descending: false)
-          .where('id', whereIn: listofids)
+          .where('id',
+              whereIn: listofids) // where in only can have 10 elems at a time
           .snapshots();
     }
   }

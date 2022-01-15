@@ -32,8 +32,41 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => ChatPageState();
 }
 
-class ChatPageState extends State<ChatPage> {
+class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   ChatPageState({Key? key});
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        chatProvider.updateDataFirestore(
+          FirestoreConstants.pathUserCollection,
+          currentUserId,
+          {FirestoreConstants.chattingWith: peerId},
+        );
+        // print("app in resumed");
+        break;
+      case AppLifecycleState.inactive:
+        chatProvider.updateDataFirestore(
+          FirestoreConstants.pathUserCollection,
+          currentUserId,
+          {FirestoreConstants.chattingWith: ''},
+        );
+        // print("app in inactive");
+        break;
+      case AppLifecycleState.paused:
+        // print("app in paused");
+        break;
+      case AppLifecycleState.detached:
+        chatProvider.updateDataFirestore(
+          FirestoreConstants.pathUserCollection,
+          currentUserId,
+          {FirestoreConstants.chattingWith: ''},
+        );
+        // print("app in detached");
+        break;
+    }
+  }
 
   late String peerId;
   late String peerAvatar;
@@ -59,6 +92,7 @@ class ChatPageState extends State<ChatPage> {
 
   @override
   void initState() {
+    WidgetsBinding.instance?.addObserver(this);
     peerId = widget.peerId;
     peerAvatar = widget.peerAvatar;
     peerNickname = widget.peerNickname;
@@ -68,6 +102,12 @@ class ChatPageState extends State<ChatPage> {
     listScrollController.addListener(_scrollListener);
     readLocal();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
   }
 
   _scrollListener() {

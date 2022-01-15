@@ -73,8 +73,9 @@ class HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    super.dispose();
     btnClearController.close();
+
+    super.dispose();
   }
 
   void registerNotification() async {
@@ -757,7 +758,7 @@ class HomePageState extends State<HomePage> {
   }
 
   List<Choice> choicesofpage = <Choice>[
-    const Choice(title: AppConstants.homeTitle, icon: Icons.home),
+    const Choice(title: AppConstants.homeTitle, icon: Icons.flight),
     const Choice(title: AppConstants.searchTitle, icon: Icons.search),
     const Choice(title: AppConstants.chatTitle, icon: Icons.chat_rounded),
     const Choice(

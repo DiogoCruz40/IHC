@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:passenger/constants/constants.dart';
@@ -218,29 +219,29 @@ class _SearchPageState extends State<SearchPage> {
                             },
                           ),
                         ),
-                        Column(
-                          children: [
-                            IconButton(
-                              icon: Icon(snapshot.data?.exists == true
-                                  ? Icons.star
-                                  : Icons.star_border_outlined),
-                              color: snapshot.data?.exists == true
-                                  ? Colors.yellow
-                                  : Colors.grey,
-                              onPressed: () {
-                                setState(() {
-                                  if (snapshot.data?.exists == true) {
-                                    searchProvider.removeFavourite(
-                                        trip.id, currentuserId);
-                                  } else {
-                                    searchProvider.addFavourite(
-                                        trip.id, currentuserId);
-                                  }
-                                });
-                              },
-                            ),
-                            const IconButton(onPressed: null, icon: Icon(null))
-                          ],
+                        IconButton(
+                          icon: Icon(snapshot.data?.exists == true
+                              ? Icons.favorite
+                              : Icons.favorite_outline),
+                          color: snapshot.data?.exists == true
+                              ? Colors.red[900]
+                              : Colors.grey,
+                          onPressed: () {
+                            setState(() {
+                              if (snapshot.data?.exists == true) {
+                                searchProvider.removeFavourite(
+                                    trip.id, currentuserId);
+                                Fluttertoast.showToast(
+                                    msg:
+                                        'Removed from favourites with success');
+                              } else {
+                                searchProvider.addFavourite(
+                                    trip.id, currentuserId);
+                                Fluttertoast.showToast(
+                                    msg: 'Added to favourites with success');
+                              }
+                            });
+                          },
                         ),
                       ],
                     ),
