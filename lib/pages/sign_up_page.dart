@@ -23,13 +23,10 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     switch (authProvider.status) {
-      case Status.authenticateError:
+      case Status.authenticateRegisterError:
         Fluttertoast.showToast(msg: "Account already exists");
         break;
-      case Status.authenticateCanceled:
-        Fluttertoast.showToast(msg: "Sign up canceled");
-        break;
-      case Status.authenticated:
+      case Status.authenticatedRegister:
         Fluttertoast.showToast(msg: "Sign up success");
         break;
       default:
