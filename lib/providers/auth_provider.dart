@@ -84,7 +84,7 @@ class AuthProvider extends ChangeNotifier {
               .doc(firebaseUser.uid)
               .set({
             FirestoreConstants.nickname: firebaseUser.displayName,
-            FirestoreConstants.photoUrl: firebaseUser.photoURL,
+            FirestoreConstants.photoUrl: firebaseUser.photoURL ?? '',
             FirestoreConstants.id: firebaseUser.uid,
             'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
             FirestoreConstants.chattingWith: null
@@ -158,10 +158,11 @@ class AuthProvider extends ChangeNotifier {
               .doc(firebaseUser.uid)
               .set({
             FirestoreConstants.nickname: username,
-            FirestoreConstants.photoUrl: firebaseUser.photoURL,
+            FirestoreConstants.photoUrl: firebaseUser.photoURL ?? '',
             FirestoreConstants.id: firebaseUser.uid,
             'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
-            FirestoreConstants.chattingWith: null
+            FirestoreConstants.chattingWith: null,
+            FirestoreConstants.aboutMe: "",
           });
 
           // Write data to local storage
@@ -169,7 +170,7 @@ class AuthProvider extends ChangeNotifier {
           await prefs.setString(FirestoreConstants.id, currentUser.uid);
           await prefs.setString(FirestoreConstants.nickname, username);
           await prefs.setString(
-              FirestoreConstants.photoUrl, currentUser.photoURL ?? "");
+              FirestoreConstants.photoUrl, currentUser.photoURL ?? '');
         }
         _status = Status.authenticatedRegister;
         // Fluttertoast.showToast(msg: "Sign up success");

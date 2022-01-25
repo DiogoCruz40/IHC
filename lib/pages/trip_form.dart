@@ -304,7 +304,8 @@ class _TripFormState extends State<TripForm> {
                         FirestoreConstants.country: countryCtl.text,
                         FirestoreConstants.location: locationCtl.text,
                         FirestoreConstants.description: descriptionCtl.text,
-                        FirestoreConstants.photoUrl: photoUrl,
+                        FirestoreConstants.photoUrl:
+                            photoUrl == null ? '' : photoUrl,
                         FirestoreConstants.creationDate: Timestamp.now(),
                         FirestoreConstants.startDate:
                             Timestamp.fromDate(startDate!),
