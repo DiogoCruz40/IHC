@@ -4,12 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SettingProvider {
+class ProfileProvider {
   final SharedPreferences prefs;
   final FirebaseFirestore firebaseFirestore;
   final FirebaseStorage firebaseStorage;
 
-  SettingProvider({
+  ProfileProvider({
     required this.prefs,
     required this.firebaseFirestore,
     required this.firebaseStorage,
@@ -35,13 +35,5 @@ class SettingProvider {
         .collection(collectionPath)
         .doc(path)
         .update(dataNeedUpdate);
-  }
-
-  Future<void> updatephototripFireStore(
-      String collectionPath, String path, urlNeedUpdate) {
-    return firebaseFirestore
-        .collection(collectionPath)
-        .doc(path)
-        .update({"photoUrl": urlNeedUpdate});
   }
 }

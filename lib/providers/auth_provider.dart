@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:Passenger/constants/constants.dart';
-import 'package:Passenger/models/models.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:passenger/constants/constants.dart';
+import 'package:passenger/models/models.dart';
 //import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,6 +13,8 @@ enum Status {
   authenticating,
   authenticateError,
   authenticateCanceled,
+  authenticateRegisterError,
+  authenticatedRegister
 }
 
 class AuthProvider extends ChangeNotifier {
@@ -36,7 +39,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> isLoggedIn() async {
-    User? isLoggedIn = await firebaseAuth.currentUser;
+    User? isLoggedIn = firebaseAuth.currentUser;
 
     if (isLoggedIn != null &&
         prefs.getString(FirestoreConstants.id)?.isNotEmpty == true) {
@@ -81,7 +84,7 @@ class AuthProvider extends ChangeNotifier {
               .doc(firebaseUser.uid)
               .set({
             FirestoreConstants.nickname: firebaseUser.displayName,
-            FirestoreConstants.photoUrl: firebaseUser.photoURL,
+            FirestoreConstants.photoUrl: firebaseUser.photoURL ?? '',
             FirestoreConstants.id: firebaseUser.uid,
             'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
             FirestoreConstants.chattingWith: null
@@ -110,6 +113,7 @@ class AuthProvider extends ChangeNotifier {
       }
     } on FirebaseAuthException catch (e) {
       _status = Status.authenticateError;
+      // Fluttertoast.showToast(msg: "Sign in fail");
       notifyListeners();
       return false;
     }
@@ -154,10 +158,11 @@ class AuthProvider extends ChangeNotifier {
               .doc(firebaseUser.uid)
               .set({
             FirestoreConstants.nickname: username,
-            FirestoreConstants.photoUrl: firebaseUser.photoURL,
+            FirestoreConstants.photoUrl: firebaseUser.photoURL ?? '',
             FirestoreConstants.id: firebaseUser.uid,
             'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
-            FirestoreConstants.chattingWith: null
+            FirestoreConstants.chattingWith: null,
+            FirestoreConstants.aboutMe: "",
           });
 
           // Write data to local storage
@@ -165,14 +170,17 @@ class AuthProvider extends ChangeNotifier {
           await prefs.setString(FirestoreConstants.id, currentUser.uid);
           await prefs.setString(FirestoreConstants.nickname, username);
           await prefs.setString(
-              FirestoreConstants.photoUrl, currentUser.photoURL ?? "");
+              FirestoreConstants.photoUrl, currentUser.photoURL ?? '');
         }
-        _status = Status.authenticated;
+        _status = Status.authenticatedRegister;
+        // Fluttertoast.showToast(msg: "Sign up success");
         notifyListeners();
         return true;
       }
     } on FirebaseAuthException catch (e) {
-      _status = Status.authenticateError;
+      _status = Status.authenticateRegisterError;
+      // Fluttertoast.showToast(msg: "Account already exists");
+
       notifyListeners();
       return false;
     }
@@ -182,6 +190,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> handleSignOut() async {
     _status = Status.uninitialized;
+    // notifyListeners();
     await firebaseAuth.signOut();
     //await googleSignIn.disconnect();
     //await googleSignIn.signOut();

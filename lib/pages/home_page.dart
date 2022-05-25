@@ -4,15 +4,15 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:Passenger/constants/app_constants.dart';
-import 'package:Passenger/constants/constants.dart';
-import 'package:Passenger/providers/providers.dart';
-import 'package:Passenger/utils/utils.dart';
+import 'package:passenger/constants/constants.dart';
+import 'package:passenger/providers/providers.dart';
+import 'package:passenger/utils/utils.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 //import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-
 import '../models/models.dart';
 import '../widgets/widgets.dart';
 import 'pages.dart';
@@ -35,7 +35,7 @@ class HomePageState extends State<HomePage> {
 
   int _limit = 20;
   final int _limitIncrement = 20;
-  String _textSearch = "";
+  final String _textSearch = "";
   bool isLoading = false;
 
   late AuthProvider authProvider;
@@ -45,7 +45,6 @@ class HomePageState extends State<HomePage> {
 
   final StreamController<bool> btnClearController =
       StreamController<bool>.broadcast();
-  TextEditingController searchBarTec = TextEditingController();
 
   List<PopupChoices> choices = <PopupChoices>[
     PopupChoices(title: 'Settings', icon: Icons.settings),
@@ -55,6 +54,7 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
     authProvider = context.read<AuthProvider>();
     homeProvider = context.read<HomeProvider>();
 
@@ -67,29 +67,22 @@ class HomePageState extends State<HomePage> {
       );
     }
     registerNotification();
-    configLocalNotification();
+
     listScrollController.addListener(scrollListener);
   }
 
   @override
   void dispose() {
-    super.dispose();
     btnClearController.close();
+
+    super.dispose();
   }
 
-  void registerNotification() {
+  void registerNotification() async {
     firebaseMessaging.requestPermission();
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('onMessage: $message');
-      if (message.notification != null) {
-        showNotification(message.notification!);
-      }
-      return;
-    });
-
-    firebaseMessaging.getToken().then((token) {
-      print('push token: $token');
+    await firebaseMessaging.getToken().then((token) {
+      //print('push token: $token');
       if (token != null) {
         homeProvider.updateDataFirestore(FirestoreConstants.pathUserCollection,
             currentUserId, {'pushToken': token});
@@ -97,16 +90,56 @@ class HomePageState extends State<HomePage> {
     }).catchError((err) {
       Fluttertoast.showToast(msg: err.message.toString());
     });
+
+    firebaseMessaging.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null) {
+        _handleMessage(message);
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      // print('hey');
+      if (message.notification != null) {
+        // just delay for showing this slash page clearer because it too fast
+        _handleMessage(message);
+
+        // print(message.data);
+      }
+      return;
+    });
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      //print('onMessage: $message');
+      if (message.notification != null) {
+        showNotification(message.notification!, message);
+        // print(message.data);
+      }
+      return;
+    });
   }
 
-  void configLocalNotification() {
+  void _handleMessage(RemoteMessage remoteMessage) async {
+    if (remoteMessage.data['screen'] == 'open') {
+      await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(
+              peerNickname: remoteMessage.data['name'],
+              peerAvatar: remoteMessage.data['user_photo'],
+              peerId: remoteMessage.data['user_id'],
+            ),
+          ));
+    }
+  }
+
+  void configLocalNotification(RemoteMessage remoteMessage) {
     AndroidInitializationSettings initializationSettingsAndroid =
         const AndroidInitializationSettings('app_icon');
     IOSInitializationSettings initializationSettingsIOS =
         const IOSInitializationSettings();
     InitializationSettings initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: (payload) => _handleMessage(remoteMessage));
   }
 
   void scrollListener() {
@@ -128,7 +161,8 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  void showNotification(RemoteNotification remoteNotification) async {
+  void showNotification(RemoteNotification remoteNotification,
+      RemoteMessage remoteMessage) async {
     AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       Platform.isAndroid ? 'com.teampassenger.passenger' : 'packageiosaqui',
@@ -136,21 +170,24 @@ class HomePageState extends State<HomePage> {
       channelDescription: "Uma aplicação de viagens",
       importance: Importance.max,
       priority: Priority.high,
+      // color: Colors.blue,
     );
+
     IOSNotificationDetails iOSPlatformChannelSpecifics =
         const IOSNotificationDetails();
     NotificationDetails platformChannelSpecifics = NotificationDetails(
         android: androidPlatformChannelSpecifics,
         iOS: iOSPlatformChannelSpecifics);
 
-    print(remoteNotification);
+    //print(remoteNotification);
+    configLocalNotification(remoteMessage);
 
     await flutterLocalNotificationsPlugin.show(
       0,
       remoteNotification.title,
       remoteNotification.body,
       platformChannelSpecifics,
-      payload: null,
+      payload: 'messageopened',
     );
   }
 
@@ -262,6 +299,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: choicesofpage.length,
         child: Scaffold(
@@ -269,10 +307,10 @@ class HomePageState extends State<HomePage> {
             title: const Text(
               AppConstants.appTitle,
               style:
-                  TextStyle(fontSize: 36, fontFamily: AppConstants.fontfamily),
+                  TextStyle(fontSize: 32, fontFamily: AppConstants.fontfamily),
             ),
             bottom: TabBar(
-              isScrollable: true,
+              // isScrollable: true,
               tabs: choicesofpage.map<Widget>((Choice choice) {
                 return Tab(
                   text: choice.title,
@@ -280,7 +318,7 @@ class HomePageState extends State<HomePage> {
                 );
               }).toList(),
             ),
-            centerTitle: true,
+            //centerTitle: true,
             actions: <Widget>[buildPopupMenu()],
           ),
           body: WillPopScope(
@@ -292,8 +330,8 @@ class HomePageState extends State<HomePage> {
                   children: choicesofpage.map((Choice choice) {
                     return ChoicePage(
                       choice: choice,
-                      users: users(),
                       userTrips: userTrips(),
+                      currentuserId: currentUserId,
                     );
                   }).toList(),
                 ),
@@ -311,44 +349,6 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget users() {
-    return Column(
-      children: [
-        buildSearchBar(),
-        Expanded(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: homeProvider.getStreamFireStore(
-                FirestoreConstants.pathUserCollection, _limit, _textSearch),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasData) {
-                if ((snapshot.data?.docs.length ?? 0) > 0) {
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(10),
-                    itemBuilder: (context, index) =>
-                        buildItem(context, snapshot.data?.docs[index]),
-                    itemCount: snapshot.data?.docs.length,
-                    controller: listScrollController,
-                  );
-                } else {
-                  return const Center(
-                    child: Text("No users"),
-                  );
-                }
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(
-                    color: ColorConstants.themeColor,
-                  ),
-                );
-              }
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget userTrips() {
     return Column(
       children: [
@@ -360,17 +360,90 @@ class HomePageState extends State<HomePage> {
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasData) {
                 if ((snapshot.data?.docs.length ?? 0) > 0) {
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(10),
-                    itemBuilder: (context, index) =>
-                        buildTripItem(context, snapshot.data?.docs[index]),
-                    itemCount: snapshot.data?.docs.length,
-                    controller: listScrollController,
-                  );
+                  return Column(children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 14, 18, 4),
+                      child: Row(
+                        children: [
+                          const Text("My Trips",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.grey)),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.add_circle_outlined,
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              if (Utilities.isKeyboardShowing()) {
+                                Utilities.closeKeyboard(context);
+                              }
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TripForm(
+                                      passedHomeProvider: homeProvider,
+                                      passedCurrentUserId: currentUserId),
+                                ),
+                              );
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        physics: const BouncingScrollPhysics(
+                            parent: AlwaysScrollableScrollPhysics()),
+                        padding: const EdgeInsets.all(10),
+                        itemBuilder: (context, index) =>
+                            buildTripItem(context, snapshot.data?.docs[index]),
+                        itemCount: snapshot.data?.docs.length,
+                      ),
+                    ),
+                  ]);
                 } else {
-                  return const Center(
-                    child: Text("You have no trips"),
-                  );
+                  return Column(children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 10, 18, 0),
+                      child: Row(
+                        children: [
+                          const Text("My Trips",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.grey)),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.add_circle_outlined,
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              if (Utilities.isKeyboardShowing()) {
+                                Utilities.closeKeyboard(context);
+                              }
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TripForm(
+                                      passedHomeProvider: homeProvider,
+                                      passedCurrentUserId: currentUserId),
+                                ),
+                              );
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                    const Center(
+                      child: Text("No trips"),
+                    )
+                  ]);
                 }
               } else {
                 return const Center(
@@ -383,68 +456,6 @@ class HomePageState extends State<HomePage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget buildSearchBar() {
-    return Container(
-      height: 40,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Icon(Icons.search, color: ColorConstants.greyColor, size: 20),
-          const SizedBox(width: 5),
-          Expanded(
-            child: TextFormField(
-              textInputAction: TextInputAction.search,
-              controller: searchBarTec,
-              onChanged: (value) {
-                searchDebouncer.run(() {
-                  if (value.isNotEmpty) {
-                    btnClearController.add(true);
-                    setState(() {
-                      _textSearch = value;
-                    });
-                  } else {
-                    btnClearController.add(false);
-                    setState(() {
-                      _textSearch = "";
-                    });
-                  }
-                });
-              },
-              decoration: const InputDecoration.collapsed(
-                hintText: 'Search nickname (you have to type exactly string)',
-                hintStyle:
-                    TextStyle(fontSize: 13, color: ColorConstants.greyColor),
-              ),
-              style: const TextStyle(fontSize: 13),
-            ),
-          ),
-          StreamBuilder<bool>(
-              stream: btnClearController.stream,
-              builder: (context, snapshot) {
-                return snapshot.data == true
-                    ? GestureDetector(
-                        onTap: () {
-                          searchBarTec.clear();
-                          btnClearController.add(false);
-                          setState(() {
-                            _textSearch = "";
-                          });
-                        },
-                        child: const Icon(Icons.clear_rounded,
-                            color: ColorConstants.greyColor, size: 20))
-                    : const SizedBox.shrink();
-              }),
-        ],
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: ColorConstants.greyColor2,
-      ),
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      margin: const EdgeInsets.fromLTRB(16, 18, 16, 8),
     );
   }
 
@@ -593,82 +604,148 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget buildTripItem(BuildContext context, DocumentSnapshot? document) {
+    String locale = Localizations.localeOf(context).languageCode;
+    initializeDateFormatting(locale, null);
     if (document != null) {
       Trip trip = Trip.fromDocument(document);
       if (trip.user != currentUserId) {
         return const SizedBox.shrink();
       } else {
         return Container(
-          child: TextButton(
-            child: Row(
-              children: <Widget>[
-                Flexible(
-                  child: Container(
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          child: Text(
-                            '${trip.country}, ${trip.location}',
-                            maxLines: 1,
-                            style: const TextStyle(
-                                color: ColorConstants.primaryColor),
-                          ),
-                          alignment: Alignment.centerLeft,
-                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 5),
-                        ),
-                        Container(
-                          child: Text(
-                            'Start Date: ${trip.startDate.toDate()}',
-                            maxLines: 1,
-                            style: const TextStyle(
-                                color: ColorConstants.primaryColor),
-                          ),
-                          alignment: Alignment.centerLeft,
-                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                        ),
-                        Container(
-                          child: Text(
-                            'End Date: ${trip.startDate.toDate()}',
-                            maxLines: 1,
-                            style: const TextStyle(
-                                color: ColorConstants.primaryColor),
-                          ),
-                          alignment: Alignment.centerLeft,
-                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                        ),
-                        IconButton(
-                            onPressed: () {}, icon: const Icon(Icons.edit)),
-                        IconButton(
-                            onPressed: () {}, icon: const Icon(Icons.delete))
-                      ],
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ListTile(
+                      title: Text('${trip.country}, ${trip.location}'),
+                      subtitle: Row(children: [
+                        Flexible(
+                            child: Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                    'Start Date: ${DateFormat.yMd(locale).format(trip.startDate.toDate())}')),
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                    'End Date: ${DateFormat.yMd(locale).format(trip.endDate.toDate())}')),
+                          ],
+                        ))
+                      ]),
+                      leading: SizedBox(
+                        width: 100,
+                        child: trip.photoUrl.isNotEmpty
+                            ? Image.network(
+                                trip.photoUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, object, stackTrace) {
+                                  return const Icon(
+                                    Icons.image,
+                                    size: 50,
+                                    color: ColorConstants.greyColor,
+                                  );
+                                },
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  }
+                                  return SizedBox(
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: ColorConstants.themeColor,
+                                        value: loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null &&
+                                                loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )
+                            : const Icon(
+                                Icons.image,
+                                size: 50,
+                                color: ColorConstants.greyColor,
+                              ),
+                      ),
+                      onTap: () {
+                        if (Utilities.isKeyboardShowing()) {
+                          Utilities.closeKeyboard(context);
+                        }
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ViewTrip(document: document)));
+                      },
                     ),
-                    margin: const EdgeInsets.only(left: 20),
                   ),
-                ),
-              ],
-            ),
-            onPressed: () {
-              if (Utilities.isKeyboardShowing()) {
-                Utilities.closeKeyboard(context);
-              }
-              /*Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatPage(
-                    peerId: userChat.id,
-                    peerAvatar: userChat.photoUrl,
-                    peerNickname: userChat.nickname,
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        color: Colors.grey,
+                        onPressed: () {
+                          if (Utilities.isKeyboardShowing()) {
+                            Utilities.closeKeyboard(context);
+                          }
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TripFormEdit(
+                                  passedHomeProvider: homeProvider,
+                                  passedCurrentUserId: currentUserId,
+                                  photoUrl: trip.photoUrl,
+                                  trip: trip),
+                            ),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
+                        onPressed: () => showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: Text(
+                                'Delete "${trip.country}, ${trip.location}"'),
+                            content: const Text(
+                                'Are you sure you want to delete this trip?'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'No'),
+                                child: const Text('No'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  homeProvider.removeDataFirestore(
+                                      FirestoreConstants.pathTripCollection,
+                                      trip.id);
+                                  Navigator.pop(context, 'Yes');
+                                },
+                                child: const Text('Yes'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              );*/
-            },
-            style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all<Color>(ColorConstants.greyColor2),
-              shape: MaterialStateProperty.all<OutlinedBorder>(
-                const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
+                ],
               ),
             ),
           ),
@@ -681,9 +758,11 @@ class HomePageState extends State<HomePage> {
   }
 
   List<Choice> choicesofpage = <Choice>[
-    const Choice(title: AppConstants.homeTitle, icon: Icons.home),
+    const Choice(title: AppConstants.homeTitle, icon: Icons.flight),
     const Choice(title: AppConstants.searchTitle, icon: Icons.search),
     const Choice(title: AppConstants.chatTitle, icon: Icons.chat_rounded),
+    const Choice(
+        title: AppConstants.profileTitle, icon: Icons.person_pin_rounded),
   ];
 }
 
@@ -697,12 +776,12 @@ class ChoicePage extends StatelessWidget {
   const ChoicePage(
       {Key? key,
       required this.choice,
-      required this.users,
-      required this.userTrips})
+      required this.userTrips,
+      required this.currentuserId})
       : super(key: key);
   final Choice choice;
-  final Widget users;
   final Widget userTrips;
+  final String currentuserId;
   @override
   Widget build(BuildContext context) {
     switch (choice.title) {
@@ -712,12 +791,15 @@ class ChoicePage extends StatelessWidget {
         }
       case AppConstants.searchTitle:
         {
-          //return search();
-          break;
+          return SearchPage(currentuserId: currentuserId);
         }
       case AppConstants.chatTitle:
         {
-          return users;
+          return ChatsListPage(currentuserId: currentuserId);
+        }
+      case AppConstants.profileTitle:
+        {
+          return const Profile();
         }
     }
     return Card(

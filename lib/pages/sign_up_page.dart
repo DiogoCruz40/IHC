@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:Passenger/providers/auth_provider.dart';
+import 'package:passenger/providers/auth_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:Passenger/utils/utils.dart';
+import 'package:passenger/utils/utils.dart';
 import '../widgets/widgets.dart';
 import 'pages.dart';
 
@@ -23,13 +23,10 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     switch (authProvider.status) {
-      case Status.authenticateError:
+      case Status.authenticateRegisterError:
         Fluttertoast.showToast(msg: "Account already exists");
         break;
-      case Status.authenticateCanceled:
-        Fluttertoast.showToast(msg: "Sign up canceled");
-        break;
-      case Status.authenticated:
+      case Status.authenticatedRegister:
         Fluttertoast.showToast(msg: "Sign up success");
         break;
       default:

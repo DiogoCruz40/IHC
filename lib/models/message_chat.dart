@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:Passenger/constants/constants.dart';
+import 'package:passenger/constants/constants.dart';
 
 class MessageChat {
   String idFrom;

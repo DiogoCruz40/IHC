@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:Passenger/constants/color_constants.dart';
-import 'package:Passenger/providers/auth_provider.dart';
+import 'package:passenger/constants/color_constants.dart';
+import 'package:passenger/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'pages.dart';
@@ -52,8 +52,8 @@ class SplashPageState extends State<SplashPage> {
             ),
             const SizedBox(height: 20),
             const SizedBox(
-              width: 20,
-              height: 20,
+              width: 35,
+              height: 35,
               child:
                   CircularProgressIndicator(color: ColorConstants.themeColor),
             ),

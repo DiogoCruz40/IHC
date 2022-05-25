@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:Passenger/constants/app_constants.dart';
-import 'package:Passenger/constants/color_constants.dart';
+import 'package:passenger/constants/app_constants.dart';
+import 'package:passenger/constants/color_constants.dart';
 import 'package:photo_view/photo_view.dart';
 
 class FullPhotoPage extends StatelessWidget {
@@ -14,7 +14,7 @@ class FullPhotoPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           AppConstants.fullPhotoTitle,
-          style: TextStyle(color: ColorConstants.primaryColor),
+          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
       ),

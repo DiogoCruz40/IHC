@@ -12,35 +12,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+class Profile extends StatefulWidget {
+  const Profile({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          AppConstants.settingsTitle,
-          style: TextStyle(
-            fontFamily: AppConstants.fontfamily,
-            fontSize: 32.0,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: const SettingsPageState(),
-    );
-  }
+  _ProfileState createState() => _ProfileState();
 }
 
-class SettingsPageState extends StatefulWidget {
-  const SettingsPageState({Key? key}) : super(key: key);
-
-  @override
-  State createState() => SettingsPageStateState();
-}
-
-class SettingsPageStateState extends State<SettingsPageState> {
+class _ProfileState extends State<Profile> {
   TextEditingController? controllerNickname;
   TextEditingController? controllerAboutMe;
 
@@ -51,7 +30,7 @@ class SettingsPageStateState extends State<SettingsPageState> {
 
   bool isLoading = false;
   File? avatarImageFile;
-  late SettingProvider settingProvider;
+  late ProfileProvider profileProvider;
 
   final FocusNode focusNodeNickname = FocusNode();
   final FocusNode focusNodeAboutMe = FocusNode();
@@ -59,16 +38,16 @@ class SettingsPageStateState extends State<SettingsPageState> {
   @override
   void initState() {
     super.initState();
-    settingProvider = context.read<SettingProvider>();
+    profileProvider = context.read<ProfileProvider>();
     readLocal();
   }
 
   void readLocal() {
     setState(() {
-      id = settingProvider.getPref(FirestoreConstants.id) ?? "";
-      nickname = settingProvider.getPref(FirestoreConstants.nickname) ?? "";
-      aboutMe = settingProvider.getPref(FirestoreConstants.aboutMe) ?? "";
-      photoUrl = settingProvider.getPref(FirestoreConstants.photoUrl) ?? "";
+      id = profileProvider.getPref(FirestoreConstants.id) ?? "";
+      nickname = profileProvider.getPref(FirestoreConstants.nickname) ?? "";
+      aboutMe = profileProvider.getPref(FirestoreConstants.aboutMe) ?? "";
+      photoUrl = profileProvider.getPref(FirestoreConstants.photoUrl) ?? "";
     });
 
     controllerNickname = TextEditingController(text: nickname);
@@ -99,7 +78,7 @@ class SettingsPageStateState extends State<SettingsPageState> {
   Future uploadFile() async {
     String fileName = id;
     UploadTask uploadTask =
-        settingProvider.uploadFile(avatarImageFile!, fileName);
+        profileProvider.uploadFile(avatarImageFile!, fileName);
     try {
       TaskSnapshot snapshot = await uploadTask;
       photoUrl = await snapshot.ref.getDownloadURL();
@@ -109,11 +88,11 @@ class SettingsPageStateState extends State<SettingsPageState> {
         nickname: nickname,
         aboutMe: aboutMe,
       );
-      settingProvider
+      profileProvider
           .updateDataFirestore(
               FirestoreConstants.pathUserCollection, id, updateInfo.toJson())
           .then((data) async {
-        await settingProvider.setPref(FirestoreConstants.photoUrl, photoUrl);
+        await profileProvider.setPref(FirestoreConstants.photoUrl, photoUrl);
         setState(() {
           isLoading = false;
         });
@@ -145,13 +124,13 @@ class SettingsPageStateState extends State<SettingsPageState> {
       nickname: nickname,
       aboutMe: aboutMe,
     );
-    settingProvider
+    profileProvider
         .updateDataFirestore(
             FirestoreConstants.pathUserCollection, id, updateInfo.toJson())
         .then((data) async {
-      await settingProvider.setPref(FirestoreConstants.nickname, nickname);
-      await settingProvider.setPref(FirestoreConstants.aboutMe, aboutMe);
-      await settingProvider.setPref(FirestoreConstants.photoUrl, photoUrl);
+      await profileProvider.setPref(FirestoreConstants.nickname, nickname);
+      await profileProvider.setPref(FirestoreConstants.aboutMe, aboutMe);
+      await profileProvider.setPref(FirestoreConstants.photoUrl, photoUrl);
 
       setState(() {
         isLoading = false;

@@ -1,19 +1,19 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:Passenger/constants/app_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:Passenger/constants/constants.dart';
-import 'package:Passenger/models/models.dart';
-import 'package:Passenger/providers/providers.dart';
+import 'package:passenger/constants/constants.dart';
+import 'package:passenger/models/models.dart';
+import 'package:passenger/providers/providers.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/widgets.dart';
+import 'media_chat_page.dart';
 import 'pages.dart';
 
 class ChatPage extends StatefulWidget {
@@ -29,23 +29,48 @@ class ChatPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  State createState() => ChatPageState(
-        peerId: this.peerId,
-        peerAvatar: this.peerAvatar,
-        peerNickname: this.peerNickname,
-      );
+  State<ChatPage> createState() => ChatPageState();
 }
 
-class ChatPageState extends State<ChatPage> {
-  ChatPageState(
-      {Key? key,
-      required this.peerId,
-      required this.peerAvatar,
-      required this.peerNickname});
+class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
+  ChatPageState({Key? key});
 
-  String peerId;
-  String peerAvatar;
-  String peerNickname;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        chatProvider.updateDataFirestore(
+          FirestoreConstants.pathUserCollection,
+          currentUserId,
+          {FirestoreConstants.chattingWith: peerId},
+        );
+        // print("app in resumed");
+        break;
+      case AppLifecycleState.inactive:
+        chatProvider.updateDataFirestore(
+          FirestoreConstants.pathUserCollection,
+          currentUserId,
+          {FirestoreConstants.chattingWith: ''},
+        );
+        // print("app in inactive");
+        break;
+      case AppLifecycleState.paused:
+        // print("app in paused");
+        break;
+      case AppLifecycleState.detached:
+        chatProvider.updateDataFirestore(
+          FirestoreConstants.pathUserCollection,
+          currentUserId,
+          {FirestoreConstants.chattingWith: ''},
+        );
+        // print("app in detached");
+        break;
+    }
+  }
+
+  late String peerId;
+  late String peerAvatar;
+  late String peerNickname;
   late String currentUserId;
 
   List<QueryDocumentSnapshot> listMessage = [];
@@ -67,13 +92,22 @@ class ChatPageState extends State<ChatPage> {
 
   @override
   void initState() {
-    super.initState();
+    WidgetsBinding.instance?.addObserver(this);
+    peerId = widget.peerId;
+    peerAvatar = widget.peerAvatar;
+    peerNickname = widget.peerNickname;
     chatProvider = context.read<ChatProvider>();
     authProvider = context.read<AuthProvider>();
-
     focusNode.addListener(onFocusChange);
     listScrollController.addListener(_scrollListener);
     readLocal();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
   }
 
   _scrollListener() {
@@ -122,6 +156,7 @@ class ChatPageState extends State<ChatPage> {
     ImagePicker imagePicker = ImagePicker();
     PickedFile? pickedFile;
 
+    // ignore: deprecated_member_use
     pickedFile = await imagePicker.getImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       imageFile = File(pickedFile.path);
@@ -297,41 +332,60 @@ class ChatPageState extends State<ChatPage> {
               Row(
                 children: <Widget>[
                   isLastMessageLeft(index)
-                      ? Material(
-                          child: Image.network(
-                            peerAvatar,
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
+                      ? StreamBuilder<DocumentSnapshot>(
+                          stream:
+                              chatProvider.getUserStream(messageChat.idFrom),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<DocumentSnapshot> snapshot) {
+                            if (snapshot.hasData && snapshot.data!.exists) {
+                              return Material(
+                                child: Image.network(
+                                  snapshot.data!.get('photoUrl'),
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: ColorConstants.themeColor,
+                                        value: loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null &&
+                                                loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, object, stackTrace) {
+                                    return const Icon(
+                                      Icons.account_circle,
+                                      size: 35,
+                                      color: ColorConstants.greyColor,
+                                    );
+                                  },
+                                  width: 35,
+                                  height: 35,
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(18),
+                                ),
+                                clipBehavior: Clip.hardEdge,
+                              );
+                            } else {
+                              return const Center(
                                 child: CircularProgressIndicator(
                                   color: ColorConstants.themeColor,
-                                  value: loadingProgress.expectedTotalBytes !=
-                                              null &&
-                                          loadingProgress.expectedTotalBytes !=
-                                              null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
                                 ),
                               );
-                            },
-                            errorBuilder: (context, object, stackTrace) {
-                              return const Icon(
-                                Icons.account_circle,
-                                size: 35,
-                                color: ColorConstants.greyColor,
-                              );
-                            },
-                            width: 35,
-                            height: 35,
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(18),
-                          ),
-                          clipBehavior: Clip.hardEdge,
-                        )
+                            }
+                          })
                       : Container(width: 35),
                   messageChat.type == TypeMessage.text
                       ? Container(
@@ -505,71 +559,108 @@ class ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            Material(
-              child: Image.network(
-                peerAvatar,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: ColorConstants.themeColor,
-                      value: loadingProgress.expectedTotalBytes != null &&
-                              loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                    ),
+        title: StreamBuilder<DocumentSnapshot>(
+            stream: chatProvider.getUserStream(peerId),
+            builder: (BuildContext context,
+                AsyncSnapshot<DocumentSnapshot> snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data!.exists) {
+                  UserChat userChat = UserChat.fromDocument(snapshot.data!);
+                  return Row(
+                    children: [
+                      Material(
+                        child: Image.network(
+                          userChat.photoUrl,
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              width: 35,
+                              height: 35,
+                              child: Center(
+                                child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: ColorConstants.themeColor,
+                                    value: loadingProgress.expectedTotalBytes !=
+                                                null &&
+                                            loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, object, stackTrace) {
+                            return const Icon(
+                              Icons.account_circle,
+                              size: 35,
+                              color: ColorConstants.greyColor,
+                            );
+                          },
+                          width: 35,
+                          height: 35,
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(18),
+                        ),
+                        clipBehavior: Clip.hardEdge,
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      Expanded(
+                        child: Text(
+                          userChat.nickname,
+                          style: const TextStyle(
+                              fontSize: 22.0,
+                              fontFamily: AppConstants.fontfamily,
+                              overflow: TextOverflow.fade),
+                        ),
+                      ),
+                    ],
                   );
-                },
-                errorBuilder: (context, object, stackTrace) {
-                  return const Icon(
-                    Icons.account_circle,
-                    size: 35,
-                    color: ColorConstants.greyColor,
-                  );
-                },
-                width: 35,
-                height: 35,
-                fit: BoxFit.cover,
-              ),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(15),
-              ),
-              clipBehavior: Clip.hardEdge,
-            ),
-            const SizedBox(
-              width: 15,
-            ),
-            Expanded(
-              child: Text(
-                this.peerNickname,
-                style: const TextStyle(
-                    fontSize: 22.0,
-                    fontFamily: AppConstants.fontfamily,
-                    overflow: TextOverflow.fade),
-              ),
-            ),
-          ],
-        ),
+                } else {
+                  Fluttertoast.showToast(msg: "User not found");
+                  Navigator.pop(context);
+                  return Container();
+                }
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: ColorConstants.themeColor,
+                  ),
+                );
+              }
+            }),
         //centerTitle: true,
         actions: [
-          ElevatedButton.icon(
-            onPressed: () {
-              //Inserir aquii a chamadaaaa
-            },
-            icon: const Icon(
-              Icons.phone_in_talk_rounded,
-              size: 28,
-            ),
-            label: const Text(''),
-            style: ElevatedButton.styleFrom(elevation: 0.0),
-          ),
+          // ElevatedButton.icon(
+          //   onPressed: () {
+          //     //Inserir aquii a chamadaaaa
+          //   },
+          //   icon: const Icon(
+          //     Icons.phone_in_talk_rounded,
+          //     size: 28,
+          //   ),
+          //   label: const Text(''),
+          //   style: ElevatedButton.styleFrom(elevation: 0.0),
+          // ),
           ElevatedButton.icon(
             onPressed: () {
               //Inserir aquii a video chamadaaaa
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MediaChatPage(),
+                  ));
             },
             icon: const Icon(
               Icons.video_call,
